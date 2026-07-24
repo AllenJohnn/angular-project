@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="campusConnectApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CampusConnect - Smart Campus Portal for Students & Faculty | Team Ultriod">
+    <title>CampusConnect - Smart Campus Portal</title>
+
+    <!-- FontAwesome 6 Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- AngularJS 1.8.2 CDN Script -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    
+    <!-- Custom AngularJS App Script -->
+    <script src="js/app.js"></script>
+</head>
+<body ng-controller="MainController" ng-class="{'dark-theme': isDarkTheme}">
+
+    <div class="app-container">
+
+        <!-- ========================================== -->
+        <!-- SIDEBAR NAVIGATION                         -->
+        <!-- ========================================== -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div class="brand-title">
+                    <h2>{{ portalInfo.title }}</h2>
+                    <span>{{ portalInfo.subtitle }}</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-item" ng-class="{'active': activeTab === 'dashboard'}" ng-click="setActiveTab('dashboard')">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Campus Dashboard</span>
+                </div>
+                <div class="nav-item" ng-class="{'active': activeTab === 'notices'}" ng-click="setActiveTab('notices')">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span>Notice Board</span>
+                </div>
+                <div class="nav-item" ng-class="{'active': activeTab === 'events'}" ng-click="setActiveTab('events')">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Event Registration</span>
+                </div>
+                <div class="nav-item" ng-class="{'active': activeTab === 'lostfound'}" ng-click="setActiveTab('lostfound')">
+                    <i class="fa-solid fa-box-open"></i>
+                    <span>Lost & Found</span>
+                </div>
+                <div class="nav-item" ng-class="{'active': activeTab === 'marketplace'}" ng-click="setActiveTab('marketplace')">
+                    <i class="fa-solid fa-store"></i>
+                    <span>Student Marketplace</span>
+                </div>
+                <div class="nav-item" ng-class="{'active': activeTab === 'placements'}" ng-click="setActiveTab('placements')">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <span>Placement Corner</span>
+                </div>
+                <div class="nav-item" ng-class="{'active': activeTab === 'resources'}" ng-click="setActiveTab('resources')">
+                    <i class="fa-solid fa-book-bookmark"></i>
+                    <span>Academic Resources</span>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="team-badge">
+                    <div class="team-name">
+                        <span>Team {{ portalInfo.teamName }}</span>
+                        <i class="fa-solid fa-shield-halved" style="color: var(--accent);"></i>
+                    </div>
+                    <div class="team-lead">Lead: {{ portalInfo.teamLeader }}</div>
+                    <div class="team-lead" style="font-size:0.75rem;">Guide: {{ portalInfo.guide }}</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ========================================== -->
+        <!-- MAIN WRAPPER & TOP HEADER                   -->
+        <!-- ========================================== -->
+        <main class="main-wrapper">
+
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h1 class="page-title">
+                        <span ng-switch="activeTab">
+                            <span ng-switch-when="dashboard"><i class="fa-solid fa-chart-pie" style="color:var(--primary);"></i> Campus Overview</span>
+                            <span ng-switch-when="notices"><i class="fa-solid fa-bullhorn" style="color:var(--primary);"></i> Campus Notice Board</span>
+                            <span ng-switch-when="events"><i class="fa-solid fa-calendar-check" style="color:var(--primary);"></i> Upcoming Campus Events</span>
+                            <span ng-switch-when="lostfound"><i class="fa-solid fa-box-open" style="color:var(--primary);"></i> Lost & Found Portal</span>
+                            <span ng-switch-when="marketplace"><i class="fa-solid fa-store" style="color:var(--primary);"></i> Student Marketplace</span>
+                            <span ng-switch-when="placements"><i class="fa-solid fa-briefcase" style="color:var(--primary);"></i> Placement Cell Updates</span>
+                            <span ng-switch-when="resources"><i class="fa-solid fa-book-bookmark" style="color:var(--primary);"></i> Academic Learning Hub</span>
+                        </span>
+                    </h1>
+                </div>
+
+                <div class="header-right">
+                    <!-- Theme Toggle -->
+                    <button class="theme-toggle-btn" ng-click="toggleTheme()" title="Toggle Light/Dark Theme">
+                        <i class="fa-solid" ng-class="{'fa-moon': !isDarkTheme, 'fa-sun': isDarkTheme}"></i>
+                    </button>
+
+                    <!-- Student User Avatar -->
+                    <div class="user-profile">
+                        <div class="avatar">AJ</div>
+                        <div class="user-info">
+                            <div class="name">{{ portalInfo.teamLeader }}</div>
+                            <div class="role">MCA Student (2nd Year)</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Notification Toast -->
+            <div class="toast-notification" ng-show="notification" ng-class="'toast-' + notification.type">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>{{ notification.message }}</span>
+            </div>
+
+            <!-- Content Body Container -->
+            <div class="content-body">
+
+                <!-- ========================================== -->
+                <!-- MODULE 1: CAMPUS DASHBOARD                -->
+                <!-- ========================================== -->
+                <div class="tab-content" ng-if="activeTab === 'dashboard'">
+                    
+                    <!-- Quick Stats Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card" ng-click="setActiveTab('notices')">
+                            <div class="stat-icon blue">
+                                <i class="fa-solid fa-bullhorn"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3>{{ getNoticeCount() | number }}</h3>
+                                <p>Active Notices</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card" ng-click="setActiveTab('events')">
+                            <div class="stat-icon green">
+                                <i class="fa-solid fa-calendar-days"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3>{{ getUpcomingEventsCount() | number }}</h3>
+                                <p>Upcoming Events</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card" ng-click="setActiveTab('lostfound')">
+                            <div class="stat-icon orange">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3>{{ getLostItemsCount() | number }}</h3>
+                                <p>Unclaimed Lost Items</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card" ng-click="setActiveTab('placements')">
+                            <div class="stat-icon purple">
+                                <i class="fa-solid fa-user-graduate"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3>{{ getPlacementCount() | number }}</h3>
+                                <p>Open Placement Drives</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Main Grid -->
+                    <div class="dashboard-grid">
+                        <!-- Left Main Column -->
+                        <div class="dashboard-left">
+                            
+                            <!-- Latest Notices Panel -->
+                            <div class="section-card">
+                                <div class="section-header">
+                                    <h3><i class="fa-solid fa-bell"></i> Pinned & Urgent Notices</h3>
+                                    <button class="btn btn-outline btn-sm" ng-click="setActiveTab('notices')">View All</button>
+                                </div>
+                                <div class="notice-list">
+                                    <div class="notice-card" ng-repeat="notice in notices | filter:{pinned: true} | limitTo:3" ng-class="{'pinned': notice.pinned}">
+                                        <div class="notice-meta">
+                                            <span class="notice-dept">{{ notice.department }}</span>
+                                            <span>{{ notice.date | date:'mediumDate' }}</span>
+                                        </div>
+                                        <div class="notice-title">{{ notice.title }}</div>
+                                        <div class="notice-desc">{{ notice.description }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Featured Upcoming Events -->
+                            <div class="section-card">
+                                <div class="section-header">
+                                    <h3><i class="fa-solid fa-star"></i> Featured Campus Events</h3>
+                                    <button class="btn btn-outline btn-sm" ng-click="setActiveTab('events')">View Events</button>
+                                </div>
+                                <div class="events-grid">
+                                    <div class="event-card" ng-repeat="evt in events | limitTo:2">
+                                        <div>
+                                            <div class="event-date-badge"><i class="fa-regular fa-clock"></i> {{ evt.date | date:'EEE, MMM d, yyyy' }}</div>
+                                            <h4 class="event-title">{{ evt.name }}</h4>
+                                            <p style="font-size:0.85rem; color:var(--text-muted);">{{ evt.description }}</p>
+                                            
+                                            <div class="seat-progress-bar">
+                                                <div class="seat-progress-fill" ng-style="getSeatProgressStyle(evt)"></div>
+                                            </div>
+                                            <div style="display:flex; justify-content:space-between; font-size:0.775rem; color:var(--text-muted);">
+                                                <span>Booked: {{ evt.bookedSeats | number }} / {{ evt.totalSeats }}</span>
+                                                <span>{{ getSeatsPercentage(evt) }}% Full</span>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary btn-sm" style="margin-top:14px;" ng-click="openRegistrationModal(evt)" ng-disabled="evt.bookedSeats >= evt.totalSeats">
+                                            {{ evt.bookedSeats >= evt.totalSeats ? 'Fully Booked' : 'Register Now' }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Right Sidebar Column -->
+                        <div class="dashboard-right">
+                            
+                            <!-- Quick Marketplace Highlights -->
+                            <div class="section-card">
+                                <div class="section-header">
+                                    <h3><i class="fa-solid fa-store"></i> Recent Marketplace</h3>
+                                    <button class="btn btn-outline btn-sm" ng-click="setActiveTab('marketplace')">Explore</button>
+                                </div>
+                                <div style="display:flex; flex-direction:column; gap:12px;">
+                                    <div ng-repeat="prod in marketplace | limitTo:3" style="padding:10px; background-color:var(--bg-surface-elevated); border-radius:var(--radius-md); display:flex; justify-content:space-between; align-items:center;">
+                                        <div>
+                                            <div style="font-weight:600; font-size:0.875rem;">{{ prod.title }}</div>
+                                            <div style="font-size:0.75rem; color:var(--text-muted);">By {{ prod.sellerName }}</div>
+                                        </div>
+                                        <div class="product-price" style="font-size:1.05rem;">{{ prod.price | currency:'₹':0 }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Team Ultriod Project Banner -->
+                            <div class="section-card" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color:#ffffff;">
+                                <h3 style="color:#ffffff; margin-bottom:8px;"><i class="fa-solid fa-laptop-code"></i> Bootcamp Project</h3>
+                                <p style="font-size:0.85rem; opacity:0.9; margin-bottom:12px;">Developing CampusConnect Smart Campus Portal using AngularJS single-page architecture.</p>
+                                <div style="font-size:0.775rem; background:rgba(255,255,255,0.15); padding:8px 12px; border-radius:var(--radius-md);">
+                                    <strong>Team Members:</strong>
+                                    <ul style="margin-left:16px; margin-top:4px;">
+                                        <li ng-repeat="member in portalInfo.teamMembers">{{ member.name }} ({{ member.role }})</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- MODULE 2: NOTICE BOARD                    -->
+                <!-- ========================================== -->
+                <div class="tab-content" ng-if="activeTab === 'notices'">
+                    
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <i class="fa-solid fa-filter" style="color:var(--text-muted);"></i>
+                            <select class="form-select" ng-model="noticeFilterDept">
+                                <option value="">All Departments</option>
+                                <option ng-repeat="dept in departmentsList" ng-if="dept !== 'All Departments'" value="{{ dept }}">{{ dept }}</option>
+                            </select>
+
+                            <select class="form-select" ng-model="noticeFilterPriority">
+                                <option value="">All Priorities</option>
+                                <option value="High">High Priority</option>
+                                <option value="Medium">Medium Priority</option>
+                                <option value="Low">Low Priority</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <input type="text" class="form-control" placeholder="Search notices..." ng-model="noticeSearchText" style="width:240px;">
+                            <button class="btn btn-primary" ng-click="showNoticeModal = true">
+                                <i class="fa-solid fa-plus"></i> Post Notice
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="notice-list">
+                        <div class="notice-card" ng-repeat="notice in notices | filter:{department: noticeFilterDept, priority: noticeFilterPriority} | filter:noticeSearchText" ng-class="{'pinned': notice.pinned}">
+                            <div class="notice-meta">
+                                <div>
+                                    <span class="notice-dept">{{ notice.department }}</span>
+                                    <span class="badge" ng-class="'badge-' + (notice.priority | lowercase)" style="margin-left:8px;">{{ notice.priority | uppercase }}</span>
+                                </div>
+                                <span><i class="fa-regular fa-calendar"></i> {{ notice.date | date:'fullDate' }}</span>
+                            </div>
+                            <h3 class="notice-title">{{ notice.title }}</h3>
+                            <p class="notice-desc">{{ notice.description }}</p>
+                        </div>
+
+                        <div ng-show="(notices | filter:{department: noticeFilterDept, priority: noticeFilterPriority} | filter:noticeSearchText).length === 0" style="text-align:center; padding:40px; color:var(--text-muted);">
+                            <i class="fa-solid fa-inbox" style="font-size:2.5rem; margin-bottom:12px;"></i>
+                            <p>No notices matching the selected filter criteria.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- MODULE 3: EVENT REGISTRATION              -->
+                <!-- ========================================== -->
+                <div class="tab-content" ng-if="activeTab === 'events'">
+                    
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <span style="font-size:0.875rem; font-weight:600;">Category:</span>
+                            <button class="btn btn-sm" ng-repeat="cat in eventCategories" ng-class="{'btn-primary': eventCategoryFilter === cat, 'btn-outline': eventCategoryFilter !== cat}" ng-click="$parent.eventCategoryFilter = cat">
+                                {{ cat }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="events-grid">
+                        <div class="event-card" ng-repeat="evt in events | filter:(eventCategoryFilter === 'All' ? '' : eventCategoryFilter)">
+                            <div>
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span class="event-date-badge"><i class="fa-regular fa-calendar"></i> {{ evt.date | date:'mediumDate' }}</span>
+                                    <span class="badge badge-info">{{ evt.category }}</span>
+                                </div>
+                                <h3 class="event-title">{{ evt.name }}</h3>
+                                <p style="font-size:0.875rem; color:var(--text-muted); margin-bottom:14px;">{{ evt.description }}</p>
+                                
+                                <div class="event-info-list">
+                                    <div><i class="fa-solid fa-location-dot" style="color:var(--primary);"></i> <span><strong>Venue:</strong> {{ evt.venue }}</span></div>
+                                    <div><i class="fa-solid fa-users" style="color:var(--primary);"></i> <span><strong>Organizer:</strong> {{ evt.organizer }}</span></div>
+                                </div>
+
+                                <div class="seat-progress-bar">
+                                    <div class="seat-progress-fill" ng-style="getSeatProgressStyle(evt)"></div>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; font-size:0.775rem; color:var(--text-muted); margin-bottom:14px;">
+                                    <span>Available Seats: <strong>{{ evt.totalSeats - evt.bookedSeats }}</strong> of {{ evt.totalSeats }}</span>
+                                    <span>{{ getSeatsPercentage(evt) }}% Full</span>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary" ng-click="openRegistrationModal(evt)" ng-disabled="evt.bookedSeats >= evt.totalSeats">
+                                <i class="fa-solid fa-ticket"></i> {{ evt.bookedSeats >= evt.totalSeats ? 'Event Full' : 'Register Now' }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Registered Students List Section -->
+                    <div class="section-card" style="margin-top:36px;">
+                        <div class="section-header">
+                            <h3><i class="fa-solid fa-clipboard-user"></i> Recent Event Registrations Log</h3>
+                            <span class="badge badge-success">Total Registered: {{ getTotalRegistrationsCount() | number }}</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Student Name</th>
+                                        <th>Event Name</th>
+                                        <th>Department</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Registration Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="reg in registeredStudents">
+                                        <td><strong>{{ reg.studentId | uppercase }}</strong></td>
+                                        <td>{{ reg.studentName }}</td>
+                                        <td><span class="badge badge-info">{{ reg.eventName }}</span></td>
+                                        <td>{{ reg.department }}</td>
+                                        <td>{{ reg.email | lowercase }}</td>
+                                        <td>{{ reg.phone }}</td>
+                                        <td>{{ reg.regDate | date:'short' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- MODULE 4: LOST & FOUND PORTAL             -->
+                <!-- ========================================== -->
+                <div class="tab-content" ng-if="activeTab === 'lostfound'">
+                    
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <span style="font-size:0.875rem; font-weight:600;">Status:</span>
+                            <button class="btn btn-sm" ng-class="{'btn-primary': lostFoundStatusFilter === 'All', 'btn-outline': lostFoundStatusFilter !== 'All'}" ng-click="lostFoundStatusFilter = 'All'">All</button>
+                            <button class="btn btn-sm" ng-class="{'btn-primary': lostFoundStatusFilter === 'Lost', 'btn-outline': lostFoundStatusFilter !== 'Lost'}" ng-click="lostFoundStatusFilter = 'Lost'">Lost Items</button>
+                            <button class="btn btn-sm" ng-class="{'btn-primary': lostFoundStatusFilter === 'Found', 'btn-outline': lostFoundStatusFilter !== 'Found'}" ng-click="lostFoundStatusFilter = 'Found'">Found Items</button>
+                        </div>
+
+                        <button class="btn btn-primary" ng-click="showLostFoundModal = true">
+                            <i class="fa-solid fa-plus-circle"></i> Report Lost / Found Item
+                        </button>
+                    </div>
+
+                    <div class="lost-found-grid">
+                        <div class="lost-found-card" ng-repeat="item in lostAndFound | filter:(lostFoundStatusFilter === 'All' ? '' : lostFoundStatusFilter)">
+                            <div class="item-status-bar">
+                                <span class="badge badge-info">{{ item.category }}</span>
+                                
+                                <!-- Demonstrating ng-switch -->
+                                <span ng-switch="item.status">
+                                    <span ng-switch-when="Lost" class="badge badge-lost"><i class="fa-solid fa-circle-exclamation"></i> {{ item.status | uppercase }}</span>
+                                    <span ng-switch-when="Found" class="badge badge-found"><i class="fa-solid fa-circle-check"></i> {{ item.status | uppercase }}</span>
+                                </span>
+                            </div>
+
+                            <h3 style="font-size:1.1rem; margin-bottom:8px;">{{ item.title }}</h3>
+                            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">{{ item.description }}</p>
+
+                            <div style="font-size:0.825rem; color:var(--text-muted); display:flex; flex-direction:column; gap:6px; background-color:var(--bg-surface-elevated); padding:10px; border-radius:var(--radius-md);">
+                                <div><i class="fa-solid fa-location-dot"></i> <strong>Location:</strong> {{ item.location }}</div>
+                                <div><i class="fa-regular fa-clock"></i> <strong>Date:</strong> {{ item.dateFound | date:'mediumDate' }}</div>
+                                <div><i class="fa-solid fa-user"></i> <strong>Contact:</strong> {{ item.contactPerson }} ({{ item.phone }})</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- MODULE 5: STUDENT MARKETPLACE             -->
+                <!-- ========================================== -->
+                <div class="tab-content" ng-if="activeTab === 'marketplace'">
+                    
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <span style="font-size:0.875rem; font-weight:600;">Category:</span>
+                            <select class="form-select" ng-model="marketplaceCategoryFilter">
+                                <option ng-repeat="cat in marketplaceCategories" value="{{ cat }}">{{ cat }}</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <input type="text" class="form-control" placeholder="Search marketplace items..." ng-model="marketplaceSearch" style="width:240px;">
+                            <button class="btn btn-primary" ng-click="showMarketplaceModal = true">
+                                <i class="fa-solid fa-tag"></i> List New Item
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="marketplace-grid">
+                        <div class="product-card" ng-repeat="prod in marketplace | filter:(marketplaceCategoryFilter === 'All' ? '' : marketplaceCategoryFilter) | filter:marketplaceSearch">
+                            <div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                    <span class="badge" ng-class="prod.badgeClass">{{ prod.category }}</span>
+                                    <span class="badge badge-info">{{ prod.condition }}</span>
+                                </div>
+
+                                <h3 style="font-size:1.15rem; margin-bottom:6px;">{{ prod.title }}</h3>
+                                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">{{ prod.description }}</p>
+
+                                <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:12px;">
+                                    <!-- Demonstrating number & currency filters -->
+                                    <span class="product-price">{{ prod.price | currency:'₹':2 }}</span>
+                                    <span style="font-size:0.75rem; color:var(--text-muted);">Listed: {{ prod.datePosted | date:'shortDate' }}</span>
+                                </div>
+                            </div>
+
+                            <div style="font-size:0.8rem; background-color:var(--bg-surface-elevated); padding:10px; border-radius:var(--radius-md); color:var(--text-muted);">
+                                <div><i class="fa-solid fa-user-tag"></i> <strong>Seller:</strong> {{ prod.sellerName }}</div>
+                                <div style="margin-top:2px;"><i class="fa-solid fa-envelope"></i> {{ prod.contact }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- MODULE 6: PLACEMENT CORNER                -->
+                <!-- ========================================== -->
+                <div class="tab-content" ng-if="activeTab === 'placements'">
+                    
+                    <div class="filter-bar">
+                        <div class="filter-group" style="width:100%;">
+                            <i class="fa-solid fa-search" style="color:var(--text-muted);"></i>
+                            <input type="text" class="form-control" placeholder="Search company, role or skills..." ng-model="placementSearch" style="flex:1;">
+                        </div>
+                    </div>
+
+                    <div class="placements-grid">
+                        <div class="placement-card" ng-repeat="place in placements | filter:placementSearch">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div>
+                                    <h3 class="company-name">{{ place.company }}</h3>
+                                    <div style="font-size:1rem; font-weight:600; color:var(--primary);">{{ place.role }}</div>
+                                </div>
+                                <span class="badge" ng-class="{'badge-success': place.status === 'Open', 'badge-warning': place.status === 'Closing Soon'}">{{ place.status }}</span>
+                            </div>
+
+                            <div class="job-package">{{ place.package }}</div>
+
+                            <div style="font-size:0.85rem; color:var(--text-muted); margin:12px 0; display:flex; flex-direction:column; gap:6px;">
+                                <div><i class="fa-solid fa-graduation-cap"></i> <strong>Eligibility:</strong> {{ place.eligibility }}</div>
+                                <div><i class="fa-solid fa-location-dot"></i> <strong>Location:</strong> {{ place.location }}</div>
+                                <div><i class="fa-solid fa-calendar-day"></i> <strong>Interview Date:</strong> {{ place.interviewDate | date:'mediumDate' }}</div>
+                                <div><i class="fa-solid fa-clock"></i> <strong>Apply Before:</strong> {{ place.deadline | date:'mediumDate' }}</div>
+                            </div>
+
+                            <div class="tag-cloud">
+                                <span class="tag" ng-repeat="tag in place.tags">{{ tag }}</span>
+                            </div>
+
+                            <button class="btn btn-primary" style="width:100%; margin-top:16px;" ng-click="applyPlacementModal(place)">
+                                <i class="fa-solid fa-paper-plane"></i> Apply Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- MODULE 7: ACADEMIC RESOURCES              -->
+                <!-- ========================================== -->
+                <div class="tab-content" ng-if="activeTab === 'resources'">
+                    
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <label style="font-weight:600; font-size:0.875rem;">Filter Category (ng-options):</label>
+                            
+                            <!-- Demonstrating ng-options directive -->
+                            <select class="form-select" ng-model="selectedResourceCategory" ng-options="opt.value as opt.label for opt in resourceCategoriesOptions" style="min-width:260px;">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Resource Title</th>
+                                        <th>Subject</th>
+                                        <th>Category</th>
+                                        <th>Format</th>
+                                        <th>File Size</th>
+                                        <th>Author</th>
+                                        <th>Downloads</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="res in resources | filter:(selectedResourceCategory ? {category: selectedResourceCategory} : '')">
+                                        <td><strong>{{ res.title }}</strong></td>
+                                        <td><span class="badge badge-info">{{ res.subject }}</span></td>
+                                        <td>{{ res.category }}</td>
+                                        <!-- Demonstrating lowercase filter -->
+                                        <td><code>{{ res.format | lowercase }}</code></td>
+                                        <td>{{ res.size }}</td>
+                                        <td>{{ res.author }}</td>
+                                        <td>{{ res.downloads | number }}</td>
+                                        <td>
+                                            <button class="btn btn-outline btn-sm" ng-click="downloadResource(res)">
+                                                <i class="fa-solid fa-download"></i> Download
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /content-body -->
+
+        </main>
+    </div><!-- /app-container -->
+
+
+    <!-- ========================================== -->
+    <!-- MODALS SECTION (ANGULARJS VALIDATED FORMS) -->
+    <!-- ========================================== -->
+
+    <!-- 1. EVENT REGISTRATION MODAL (Demonstrates Forms & Validation) -->
+    <div class="modal-backdrop" ng-show="showEventModal" ng-cloak>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-ticket" style="color:var(--primary);"></i> Event Registration Form</h3>
+                <button class="close-btn" ng-click="showEventModal = false">&times;</button>
+            </div>
+            
+            <!-- AngularJS Form with Validation Directives -->
+            <form name="eventForm" ng-submit="submitRegistration(eventForm)" novalidate>
+                <div class="modal-body">
+                    
+                    <div class="form-group">
+                        <label>Selected Event:</label>
+                        <!-- Demonstrating ng-readonly -->
+                        <input type="text" class="form-control" ng-value="selectedEvent.name" ng-readonly="true">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Full Student Name <span style="color:var(--danger);">*</span></label>
+                        <!-- Required & Minlength/Maxlength Validation -->
+                        <input type="text" name="studentName" class="form-control" ng-model="regForm.studentName" required ng-minlength="3" ng-maxlength="40" placeholder="e.g. Allen John Joy">
+                        <div class="validation-error" ng-show="eventForm.studentName.$touched && eventForm.studentName.$invalid">
+                            <span ng-show="eventForm.studentName.$error.required"><i class="fa-solid fa-circle-exclamation"></i> Student Name is required.</span>
+                            <span ng-show="eventForm.studentName.$error.minlength"><i class="fa-solid fa-circle-exclamation"></i> Minimum 3 characters required.</span>
+                            <span ng-show="eventForm.studentName.$error.maxlength"><i class="fa-solid fa-circle-exclamation"></i> Maximum 40 characters allowed.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Student ID / Roll Number <span style="color:var(--danger);">*</span></label>
+                        <input type="text" name="studentId" class="form-control" ng-model="regForm.studentId" required ng-pattern="/^[0-9]{2}[A-Za-z]{3}[0-9]{3}$/" placeholder="e.g. 24MCA001">
+                        <div class="validation-error" ng-show="eventForm.studentId.$touched && eventForm.studentId.$invalid">
+                            <span ng-show="eventForm.studentId.$error.required"><i class="fa-solid fa-circle-exclamation"></i> Student ID is required.</span>
+                            <span ng-show="eventForm.studentId.$error.pattern"><i class="fa-solid fa-circle-exclamation"></i> Valid format required (e.g., 24MCA001).</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Campus Email Address <span style="color:var(--danger);">*</span></label>
+                        <!-- Email Validation -->
+                        <input type="email" name="email" class="form-control" ng-model="regForm.email" required placeholder="e.g. allen.joy@campus.edu">
+                        <div class="validation-error" ng-show="eventForm.email.$touched && eventForm.email.$invalid">
+                            <span ng-show="eventForm.email.$error.required"><i class="fa-solid fa-circle-exclamation"></i> Email address is required.</span>
+                            <span ng-show="eventForm.email.$error.email"><i class="fa-solid fa-circle-exclamation"></i> Please enter a valid email address.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>10-Digit Mobile Phone Number <span style="color:var(--danger);">*</span></label>
+                        <!-- Pattern Validation -->
+                        <input type="text" name="phone" class="form-control" ng-model="regForm.phone" required ng-pattern="/^[0-9]{10}$/" placeholder="e.g. 9876543210">
+                        <div class="validation-error" ng-show="eventForm.phone.$touched && eventForm.phone.$invalid">
+                            <span ng-show="eventForm.phone.$error.required"><i class="fa-solid fa-circle-exclamation"></i> Mobile phone number is required.</span>
+                            <span ng-show="eventForm.phone.$error.pattern"><i class="fa-solid fa-circle-exclamation"></i> Must be exactly 10 digits.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Department</label>
+                        <select class="form-select" style="width:100%;" ng-model="regForm.department">
+                            <option value="MCA">MCA (Master of Computer Applications)</option>
+                            <option value="Computer Science">B.Tech Computer Science</option>
+                            <option value="Electronics">B.Tech Electronics</option>
+                            <option value="Mechanical">B.Tech Mechanical</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="agreeTerms" ng-model="regForm.agreeTerms" required> I agree to campus event rules & conduct.
+                        </label>
+                        <div class="validation-error" ng-show="eventForm.agreeTerms.$touched && eventForm.agreeTerms.$invalid">
+                            <span><i class="fa-solid fa-circle-exclamation"></i> You must agree to the rules to register.</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" ng-click="showEventModal = false">Cancel</button>
+                    <!-- Demonstrating ng-disabled directive -->
+                    <button type="submit" class="btn btn-primary" ng-disabled="eventForm.$invalid">
+                        <i class="fa-solid fa-check"></i> Submit Registration
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. POST NOTICE MODAL -->
+    <div class="modal-backdrop" ng-show="showNoticeModal" ng-cloak>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-bullhorn" style="color:var(--primary);"></i> Create Campus Notice</h3>
+                <button class="close-btn" ng-click="showNoticeModal = false">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Notice Title</label>
+                    <input type="text" class="form-control" ng-model="newNotice.title" placeholder="Notice heading...">
+                </div>
+                <div class="form-group">
+                    <label>Department</label>
+                    <select class="form-select" style="width:100%;" ng-model="newNotice.department">
+                        <option ng-repeat="dept in departmentsList" ng-if="dept !== 'All Departments'" value="{{ dept }}">{{ dept }}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select class="form-select" style="width:100%;" ng-model="newNotice.priority">
+                        <option value="High">High Priority</option>
+                        <option value="Medium">Medium Priority</option>
+                        <option value="Low">Low Priority</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description & Details</label>
+                    <textarea class="form-control" rows="4" ng-model="newNotice.description" placeholder="Provide full details of the notice..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" ng-model="newNotice.pinned"> Pin to top of dashboard
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" ng-click="showNoticeModal = false">Cancel</button>
+                <button class="btn btn-primary" ng-click="addNotice()">Post Notice</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. LOST & FOUND REPORT MODAL -->
+    <div class="modal-backdrop" ng-show="showLostFoundModal" ng-cloak>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-box-open" style="color:var(--primary);"></i> Report Lost or Found Item</h3>
+                <button class="close-btn" ng-click="showLostFoundModal = false">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Item Name / Title</label>
+                    <input type="text" class="form-control" ng-model="newItem.title" placeholder="e.g. Blue Sonata Watch">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select class="form-select" style="width:100%;" ng-model="newItem.status">
+                        <option value="Lost">Lost (Looking for item)</option>
+                        <option value="Found">Found (Item turned in / available)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select class="form-select" style="width:100%;" ng-model="newItem.category">
+                        <option value="Electronics">Electronics</option>
+                        <option value="Books">Books & Study Material</option>
+                        <option value="Accessories">Accessories & Personal Items</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Location Lost / Found</label>
+                    <input type="text" class="form-control" ng-model="newItem.location" placeholder="e.g. Canteen Counter 2">
+                </div>
+                <div class="form-group">
+                    <label>Contact Person & Phone</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" class="form-control" ng-model="newItem.contactPerson" placeholder="Your Name">
+                        <input type="text" class="form-control" ng-model="newItem.phone" placeholder="Phone Number">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Additional Description</label>
+                    <textarea class="form-control" rows="2" ng-model="newItem.description" placeholder="Item description, color, marks..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" ng-click="showLostFoundModal = false">Cancel</button>
+                <button class="btn btn-primary" ng-click="addLostFoundItem()">Submit Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. MARKETPLACE LISTING MODAL -->
+    <div class="modal-backdrop" ng-show="showMarketplaceModal" ng-cloak>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-store" style="color:var(--primary);"></i> List Product on Marketplace</h3>
+                <button class="close-btn" ng-click="showMarketplaceModal = false">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Product Title</label>
+                    <input type="text" class="form-control" ng-model="newProduct.title" placeholder="e.g. Scientific Calculator FX-991EX">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select class="form-select" style="width:100%;" ng-model="newProduct.category">
+                        <option ng-repeat="cat in marketplaceCategories" ng-if="cat !== 'All'" value="{{ cat }}">{{ cat }}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Price (₹)</label>
+                    <input type="number" class="form-control" ng-model="newProduct.price" placeholder="450">
+                </div>
+                <div class="form-group">
+                    <label>Condition</label>
+                    <select class="form-select" style="width:100%;" ng-model="newProduct.condition">
+                        <option value="Brand New">Brand New</option>
+                        <option value="Like New">Like New</option>
+                        <option value="Good">Good</option>
+                        <option value="Fair">Fair</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Seller Name & Contact Info</label>
+                    <input type="text" class="form-control" ng-model="newProduct.sellerName" placeholder="Seller Name" style="margin-bottom:8px;">
+                    <input type="text" class="form-control" ng-model="newProduct.contact" placeholder="Email / Phone">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea class="form-control" rows="2" ng-model="newProduct.description" placeholder="Product details..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" ng-click="showMarketplaceModal = false">Cancel</button>
+                <button class="btn btn-primary" ng-click="addMarketplaceProduct()">List Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. PLACEMENT APPLICATION MODAL -->
+    <div class="modal-backdrop" ng-show="showPlacementModal" ng-cloak>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-paper-plane" style="color:var(--primary);"></i> Apply for Placement Drive</h3>
+                <button class="close-btn" ng-click="showPlacementModal = false">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom:16px;">Applying for position <strong>{{ selectedPlacement.role }}</strong> at <strong>{{ selectedPlacement.company }}</strong>.</p>
+                <div class="form-group">
+                    <label>Student Roll Number</label>
+                    <input type="text" class="form-control" placeholder="24MCA001" value="24MCA001" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Link to Resume / CV (Drive / Portfolio)</label>
+                    <input type="text" class="form-control" placeholder="https://drive.google.com/your-resume-link">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" ng-click="showPlacementModal = false">Cancel</button>
+                <button class="btn btn-primary" ng-click="submitPlacementApplication()">Confirm Application</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
