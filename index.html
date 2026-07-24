@@ -3,198 +3,414 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="FISAT CampusConnect - Federal Institute of Science and Technology Official Student Portal">
-    <title>FISAT CampusConnect | Portal</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <meta name="description" content="FISAT - CampusConnect Smart Campus Portal">
+    <title>FISAT | CampusConnect Smart Campus Portal</title>
+    <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="node_modules/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="node_modules/animate.css/animate.min.css"/>
     <link rel="stylesheet" href="css/style.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="node_modules/angular/angular.min.js"></script>
     <script src="js/app.js"></script>
 </head>
-<body ng-controller="MainController" ng-class="{'dark-theme': isDarkTheme}">
+<body ng-controller="MainController" ng-init="initPortal()" ng-class="{'dark-theme': isDarkTheme}">
 
     <div class="app-container">
+        
+        <!-- Left Sidebar Navigation -->
         <aside class="sidebar">
-            <div class="sidebar-brand">
-                <div class="brand-crest">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFHb9iws6dLuTpNhNuTNzogpGkqs94KeRXXg692GUSHg&s=10" alt="FISAT Logo" style="width:100%; height:100%; object-fit:contain; border-radius:4px;">
+            <div class="sidebar-logo-area">
+                <div class="sidebar-logo-crest" ng-click="setActiveTab('home')" style="cursor:pointer;">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFHb9iws6dLuTpNhNuTNzogpGkqs94KeRXXg692GUSHg&s=10" alt="FISAT Logo">
                 </div>
-                <div class="brand-text">
-                    <h2>FISAT CampusConnect</h2>
-                    <span>Angamaly, Kerala</span>
+                <div class="sidebar-logo-text">
+                    <h2>FISAT</h2>
+                    <span>CampusConnect</span>
                 </div>
             </div>
 
-            <nav class="sidebar-nav">
-                <div class="nav-item" ng-class="{'active': activeTab === 'home'}" ng-click="setActiveTab('home')">
-                    <i class="fa-solid fa-house"></i>
-                    <span>Portal Home</span>
+            <nav class="sidebar-menu">
+                <div class="menu-item" ng-class="{'active': activeTab === 'dashboard'}" ng-click="setActiveTab('dashboard')">
+                    <i class="fa-solid fa-border-all"></i>
+                    <span>Campus Dashboard</span>
                 </div>
-                <div class="nav-item" ng-class="{'active': activeTab === 'dashboard'}" ng-click="setActiveTab('dashboard')">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span>Dashboard Overview</span>
+                <div class="menu-item" ng-class="{'active': activeTab === 'notices'}" ng-click="setActiveTab('notices')">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Notice Board</span>
                 </div>
-                <div class="nav-item" ng-class="{'active': activeTab === 'notices'}" ng-click="setActiveTab('notices')">
-                    <i class="fa-solid fa-file-lines"></i>
-                    <span>Notices & Circulars</span>
-                </div>
-                <div class="nav-item" ng-class="{'active': activeTab === 'events'}" ng-click="setActiveTab('events')">
+                <div class="menu-item" ng-class="{'active': activeTab === 'events'}" ng-click="setActiveTab('events')">
                     <i class="fa-solid fa-calendar-days"></i>
                     <span>Event Registration</span>
                 </div>
-                <div class="nav-item" ng-class="{'active': activeTab === 'lostfound'}" ng-click="setActiveTab('lostfound')">
+                <div class="menu-item" ng-class="{'active': activeTab === 'lostfound'}" ng-click="setActiveTab('lostfound')">
                     <i class="fa-solid fa-boxes-packing"></i>
-                    <span>Lost & Found Registry</span>
+                    <span>Lost & Found</span>
                 </div>
-                <div class="nav-item" ng-class="{'active': activeTab === 'marketplace'}" ng-click="setActiveTab('marketplace')">
+                <div class="menu-item" ng-class="{'active': activeTab === 'marketplace'}" ng-click="setActiveTab('marketplace')">
                     <i class="fa-solid fa-bag-shopping"></i>
                     <span>Student Marketplace</span>
                 </div>
-                <div class="nav-item" ng-class="{'active': activeTab === 'placements'}" ng-click="setActiveTab('placements')">
+                <div class="menu-item" ng-class="{'active': activeTab === 'placements'}" ng-click="setActiveTab('placements')">
                     <i class="fa-solid fa-briefcase"></i>
-                    <span>Placement Cell</span>
+                    <span>Placement Corner</span>
                 </div>
-                <div class="nav-item" ng-class="{'active': activeTab === 'resources'}" ng-click="setActiveTab('resources')">
+                <div class="menu-item" ng-class="{'active': activeTab === 'resources'}" ng-click="setActiveTab('resources')">
                     <i class="fa-solid fa-book"></i>
                     <span>Academic Resources</span>
                 </div>
             </nav>
         </aside>
 
+        <!-- Main Layout Wrapper -->
         <main class="main-wrapper">
-            <header class="top-header">
-                <div class="header-title-block">
-                    <h1>
-                        <span ng-switch="activeTab">
-                            <span ng-switch-when="home">FISAT CampusConnect</span>
-                            <span ng-switch-when="dashboard">Dashboard Overview</span>
-                            <span ng-switch-when="notices">Notices & Circulars</span>
-                            <span ng-switch-when="events">Event Registration</span>
-                            <span ng-switch-when="lostfound">Lost & Found Registry</span>
-                            <span ng-switch-when="marketplace">Student Marketplace</span>
-                            <span ng-switch-when="placements">Placement Cell</span>
-                            <span ng-switch-when="resources">Academic Resources</span>
-                        </span>
-                    </h1>
-                    <span>{{ portalInfo.institutionName }}</span>
-                </div>
+            
+            <div class="system-sub-header">
+                FISAT | CampusConnect Smart Campus Portal
+            </div>
 
-                <div class="header-controls">
-                    <button class="theme-btn" ng-click="toggleTheme()">
-                        <i class="fa-solid" ng-class="{'fa-moon': !isDarkTheme, 'fa-sun': isDarkTheme}"></i>
-                        <span>{{ isDarkTheme ? 'Dark Mode' : 'Light Mode' }}</span>
-                    </button>
-
-                    <div class="student-pill">
-                        <div class="student-avatar">AJ</div>
-                        <div>
-                            <div style="font-weight:700;">{{ portalInfo.studentProfile.name }}</div>
-                            <div style="font-size:0.725rem; color:var(--text-muted);">{{ portalInfo.studentProfile.rollNumber }} | {{ portalInfo.studentProfile.program }}</div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <div class="toast-bar animate__animated animate__fadeInUp" ng-show="notification">
+            <div class="toast-bar animate__animated animate__fadeInUp" ng-show="notification" ng-hide="notification === null">
                 <i class="fa-solid fa-circle-info"></i>
                 <span>{{ notification.message }}</span>
             </div>
 
             <div class="content-body">
-                <div class="tab-motion-wrapper" ng-if="activeTab === 'home'" style="display:flex; justify-content:center; align-items:center; min-height:65vh;">
-                    <div class="entrance-card" style="background-color:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--radius-lg); padding:48px 56px; text-align:center; max-width:440px; width:100%;">
-                        <div style="width:64px; height:64px; border-radius:12px; background-color:#ffffff; border:1px solid var(--border-subtle); display:flex; align-items:center; justify-content:center; margin:0 auto 20px auto; padding:6px; transition:var(--transition-fast);">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFHb9iws6dLuTpNhNuTNzogpGkqs94KeRXXg692GUSHg&s=10" alt="FISAT Logo" style="width:100%; height:100%; object-fit:contain;">
+
+                <!-- Simple & Minimalistic Home Landing Screen -->
+                <div class="tab-motion-wrapper" ng-if="activeTab === 'home'">
+                    <div class="myschool-hero-banner">
+                        <div class="myschool-hero-badge">
+                            <i class="fa-solid fa-building-columns"></i>
+                            <span>FISAT Central Campus</span>
+                        </div>
+                        
+                        <h1 class="myschool-hero-title">FISAT CampusConnect Portal</h1>
+                        
+                        <p class="myschool-hero-desc">
+                            Federal Institute of Science and Technology. Central digital portal for notices, events, placements, and academic resources.
+                        </p>
+
+                        <div class="myschool-hero-actions">
+                            <button class="btn btn-primary" style="padding:10px 20px; font-weight:700;" ng-click="enterPortal()">
+                                <span>Enter Dashboard</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                            <button class="btn btn-secondary" style="padding:10px 20px; font-weight:600; background:rgba(255,255,255,0.12); color:#ffffff; border-color:rgba(255,255,255,0.25);" ng-click="setActiveTab('notices')">
+                                <span>View Notices</span>
+                            </button>
                         </div>
 
-                        <h2 style="font-size:1.6rem; font-weight:800; color:var(--text-primary); margin-bottom:4px; letter-spacing:-0.02em;">FISAT CampusConnect</h2>
-                        <p style="font-size:0.875rem; color:var(--text-muted); margin-bottom:28px;">Department of Computer Applications (MCA)</p>
+                        <!-- Minimalistic Feature Cards -->
+                        <div class="myschool-hero-cards">
+                            <div class="myschool-feature-card" ng-click="setActiveTab('notices')">
+                                <div>
+                                    <div class="myschool-card-top">
+                                        <div class="myschool-feature-icon"><i class="fa-solid fa-bullhorn"></i></div>
+                                        <span class="myschool-card-meta">{{ getNoticeCount() }} Notices</span>
+                                    </div>
+                                    <div class="myschool-feature-title">
+                                        <span>Notice Board</span>
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                    </div>
+                                    <div class="myschool-feature-desc">Official departmental circulars & alerts.</div>
+                                </div>
+                            </div>
 
-                        <button class="btn btn-primary" style="width:100%; justify-content:center; padding:12px; font-size:0.9rem; font-weight:700;" ng-click="enterPortal()">
-                            <span>Enter Portal</span>
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </button>
+                            <div class="myschool-feature-card" ng-click="setActiveTab('events')">
+                                <div>
+                                    <div class="myschool-card-top">
+                                        <div class="myschool-feature-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                                        <span class="myschool-card-meta">{{ getUpcomingEventsCount() }} Events</span>
+                                    </div>
+                                    <div class="myschool-feature-title">
+                                        <span>Events</span>
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                    </div>
+                                    <div class="myschool-feature-desc">Campus events & technical fests.</div>
+                                </div>
+                            </div>
+
+                            <div class="myschool-feature-card" ng-click="setActiveTab('placements')">
+                                <div>
+                                    <div class="myschool-card-top">
+                                        <div class="myschool-feature-icon"><i class="fa-solid fa-briefcase"></i></div>
+                                        <span class="myschool-card-meta">{{ getPlacementCount() }} Drives</span>
+                                    </div>
+                                    <div class="myschool-feature-title">
+                                        <span>Placements</span>
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                    </div>
+                                    <div class="myschool-feature-desc">Corporate recruitment drives.</div>
+                                </div>
+                            </div>
+
+                            <div class="myschool-feature-card" ng-click="setActiveTab('resources')">
+                                <div>
+                                    <div class="myschool-card-top">
+                                        <div class="myschool-feature-icon"><i class="fa-solid fa-book"></i></div>
+                                        <span class="myschool-card-meta">{{ resources.length }} Resources</span>
+                                    </div>
+                                    <div class="myschool-feature-title">
+                                        <span>Academic Resources</span>
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                    </div>
+                                    <div class="myschool-feature-desc">KTU notes & question papers.</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- 1. Campus Dashboard (BootstrapMade "College" Template Inspired Scrollable View) -->
                 <div class="tab-motion-wrapper" ng-if="activeTab === 'dashboard'">
-                    <div class="metrics-grid">
-                        <div class="metric-card" style="cursor:pointer;" ng-click="setActiveTab('notices')">
-                            <div>
-                                <div class="val">{{ getNoticeCount() | number }}</div>
-                                <div class="lbl">Active MCA Circulars</div>
-                            </div>
-                            <div class="icon-box"><i class="fa-solid fa-bullhorn"></i></div>
+                    
+                    <div class="page-title-block">
+                        <div>
+                            <h1>Campus Dashboard</h1>
+                            <p>Overview of FISAT Campus notices, events, placements, resources & marketplace highlights.</p>
                         </div>
 
-                        <div class="metric-card" style="cursor:pointer;" ng-click="setActiveTab('events')">
-                            <div>
-                                <div class="val">{{ getUpcomingEventsCount() | number }}</div>
-                                <div class="lbl">MCA Technical Events</div>
-                            </div>
-                            <div class="icon-box"><i class="fa-solid fa-calendar-check"></i></div>
-                        </div>
+                        <div class="header-actions">
+                            <button class="btn-circle-icon" ng-click="toggleTheme()" title="Toggle Theme">
+                                <i class="fa-solid" ng-class="{'fa-moon': !isDarkTheme, 'fa-sun': isDarkTheme}"></i>
+                            </button>
 
-                        <div class="metric-card" style="cursor:pointer;" ng-click="setActiveTab('lostfound')">
-                            <div>
-                                <div class="val">{{ getLostItemsCount() | number }}</div>
-                                <div class="lbl">MCA Block Unclaimed</div>
-                            </div>
-                            <div class="icon-box"><i class="fa-solid fa-box-open"></i></div>
-                        </div>
-
-                        <div class="metric-card" style="cursor:pointer;" ng-click="setActiveTab('placements')">
-                            <div>
-                                <div class="val">{{ getPlacementCount() | number }}</div>
-                                <div class="lbl">MCA Placement Drives</div>
-                            </div>
-                            <div class="icon-box"><i class="fa-solid fa-user-graduate"></i></div>
-                        </div>
-                    </div>
-
-                    <div style="display:flex; flex-direction:column; gap:24px;">
-                        <div class="panel-card">
-                            <div class="panel-header">
-                                <h3><i class="fa-solid fa-circle-exclamation"></i> Pinned MCA Circulars</h3>
-                                <button class="btn btn-secondary btn-sm" ng-click="setActiveTab('notices')">View All Circulars</button>
-                            </div>
-
-                            <div class="notice-item" ng-repeat="notice in notices | filter:{pinned: true} | limitTo:3" ng-class="{'pinned': notice.pinned}">
-                                <div class="notice-header">
-                                    <span class="notice-ref">{{ notice.circularNo }}</span>
-                                    <span class="badge" ng-class="'badge-' + (notice.priority | lowercase)">{{ notice.priority | uppercase }}</span>
-                                </div>
-                                <div class="notice-title">{{ notice.title }}</div>
-                                <div class="notice-desc">{{ notice.description }}</div>
-                                <div style="margin-top:8px; font-size:0.75rem; color:var(--text-muted);">
-                                    <span>Issued by {{ notice.department }}</span> • <span>{{ notice.date | date:'mediumDate' }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="panel-card">
-                            <div class="panel-header">
-                                <h3><i class="fa-solid fa-graduation-cap"></i> MCA Student Academic Standing</h3>
-                                <span class="badge badge-success">Good Standing</span>
-                            </div>
-                            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; background-color:var(--bg-surface-secondary); padding:16px; border-radius:var(--radius-md);">
+                            <div class="user-profile-badge">
+                                <div class="user-avatar-circle">AJ</div>
                                 <div>
-                                    <div style="font-size:0.75rem; color:var(--text-muted);">Cumulative GPA</div>
-                                    <div style="font-size:1.3rem; font-weight:700;">{{ portalInfo.studentProfile.cgpa }} / 10.0</div>
-                                </div>
-                                <div>
-                                    <div style="font-size:0.75rem; color:var(--text-muted);">Attendance Average</div>
-                                    <div style="font-size:1.3rem; font-weight:700;">{{ portalInfo.studentProfile.attendance }}</div>
-                                </div>
-                                <div>
-                                    <div style="font-size:0.75rem; color:var(--text-muted);">Registered Program</div>
-                                    <div style="font-size:0.9rem; font-weight:700;">{{ portalInfo.studentProfile.program }}</div>
+                                    <div style="font-weight:800; font-size:0.85rem;">{{ portalInfo.studentProfile.name }}</div>
+                                    <div style="font-size:0.7rem; color:var(--text-muted);">{{ portalInfo.studentProfile.rollNumber }}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Sticky Quick Jump Bar -->
+                    <div class="college-quick-bar">
+                        <a class="college-quick-pill" href="#dashboard-metrics"><i class="fa-solid fa-chart-simple"></i> Metrics</a>
+                        <a class="college-quick-pill" href="#dashboard-notices"><i class="fa-solid fa-bell"></i> Notices</a>
+                        <a class="college-quick-pill" href="#dashboard-events"><i class="fa-solid fa-calendar-days"></i> Events</a>
+                        <a class="college-quick-pill" href="#dashboard-placements"><i class="fa-solid fa-briefcase"></i> Placements</a>
+                        <a class="college-quick-pill" href="#dashboard-resources"><i class="fa-solid fa-book"></i> Resources</a>
+                        <a class="college-quick-pill" href="#dashboard-marketplace"><i class="fa-solid fa-bag-shopping"></i> Marketplace</a>
+                    </div>
+
+                    <!-- Top Metrics Cards Bar -->
+                    <div id="dashboard-metrics" class="college-dashboard-section">
+                        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:16px;">
+                            <div class="ref-card" style="padding:16px; cursor:pointer;" ng-click="setActiveTab('notices')">
+                                <div style="font-size:0.725rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Campus Notices</div>
+                                <div style="font-size:1.6rem; font-weight:900; color:var(--text-primary);">{{ getNoticeCount() | number }}</div>
+                            </div>
+                            <div class="ref-card" style="padding:16px; cursor:pointer;" ng-click="setActiveTab('events')">
+                                <div style="font-size:0.725rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Upcoming Events</div>
+                                <div style="font-size:1.6rem; font-weight:900; color:var(--text-primary);">{{ getUpcomingEventsCount() | number }}</div>
+                            </div>
+                            <div class="ref-card" style="padding:16px; cursor:pointer;" ng-click="setActiveTab('placements')">
+                                <div style="font-size:0.725rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Placements</div>
+                                <div style="font-size:1.6rem; font-weight:900; color:var(--text-primary);">{{ getPlacementCount() | number }}</div>
+                            </div>
+                            <div class="ref-card" style="padding:16px; cursor:pointer;" ng-click="setActiveTab('resources')">
+                                <div style="font-size:0.725rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Academic Resources</div>
+                                <div style="font-size:1.6rem; font-weight:900; color:var(--text-primary);">{{ resources.length | number }}</div>
+                            </div>
+                            <div class="ref-card" style="padding:16px; cursor:pointer;" ng-click="setActiveTab('marketplace')">
+                                <div style="font-size:0.725rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Marketplace</div>
+                                <div style="font-size:1.6rem; font-weight:900; color:var(--text-primary);">{{ marketplace.length | number }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 1: Latest Campus Notices (Timeline Feed Style) -->
+                    <div id="dashboard-notices" class="college-dashboard-section">
+                        <div class="college-section-header">
+                            <div class="college-section-title-group">
+                                <h2><i class="fa-solid fa-bell" style="color:var(--brand-blue);"></i> Latest Campus Notices</h2>
+                                <p>Official departmental circulars, exam alerts & administration updates.</p>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" ng-click="setActiveTab('notices')">View All Notices</button>
+                        </div>
+
+                        <div class="college-notice-feed">
+                            <div class="college-notice-feed-item" ng-class="{'high-priority': notice.priority === 'High'}" ng-repeat="notice in notices">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <span class="badge badge-secondary">{{ notice.circularNo }}</span>
+                                        <span style="font-size:0.775rem; color:var(--text-muted);"><i class="fa-solid fa-building"></i> {{ notice.department }}</span>
+                                    </div>
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <span class="badge" ng-class="{'badge-high': notice.priority === 'High', 'badge-medium': notice.priority === 'Medium'}">{{ notice.priority | uppercase }}</span>
+                                        <span style="font-size:0.75rem; color:var(--text-muted);"><i class="fa-regular fa-calendar"></i> {{ notice.date | date:'mediumDate' }}</span>
+                                    </div>
+                                </div>
+                                <h3 style="font-size:0.95rem; font-weight:800; margin-bottom:4px; color:var(--text-primary);">{{ notice.title }}</h3>
+                                <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.4;">{{ notice.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Upcoming Events (Minimal & Clean Row Layout) -->
+                    <div id="dashboard-events" class="college-dashboard-section">
+                        <div class="college-section-header">
+                            <div class="college-section-title-group">
+                                <h2><i class="fa-solid fa-calendar-days" style="color:var(--brand-blue);"></i> Upcoming Events</h2>
+                                <p>Campus technical symposia, workshops & conferences.</p>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" ng-click="setActiveTab('events')">View All Events</button>
+                        </div>
+
+                        <div class="college-event-row-list">
+                            <div class="college-event-row" ng-repeat="evt in events">
+                                <div style="display:flex; align-items:center; gap:16px; flex:1;">
+                                    <div class="college-event-date-box">
+                                        <span class="day">{{ evt.date | date:'dd' }}</span>
+                                        <span class="month">{{ evt.date | date:'MMM' }}</span>
+                                    </div>
+                                    <div>
+                                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+                                            <span class="badge badge-secondary" style="font-size:0.675rem;">{{ evt.category }}</span>
+                                            <span style="font-size:0.75rem; color:var(--text-muted);"><i class="fa-solid fa-location-dot"></i> {{ evt.venue }}</span>
+                                        </div>
+                                        <h3 style="font-size:0.925rem; font-weight:800; color:var(--text-primary);">{{ evt.name }}</h3>
+                                    </div>
+                                </div>
+
+                                <div style="display:flex; align-items:center; gap:16px; flex-shrink:0;">
+                                    <span class="badge" style="background-color:var(--brand-blue-light); color:var(--brand-blue); border:none; font-size:0.725rem;">
+                                        {{ evt.totalSeats - evt.bookedSeats }} Seats Left
+                                    </span>
+
+                                    <button class="btn btn-primary btn-sm" ng-click="openRegistrationModal(evt)" ng-disabled="evt.bookedSeats >= evt.totalSeats">
+                                        {{ evt.bookedSeats >= evt.totalSeats ? 'Closed' : 'Register' }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Placement Updates -->
+                    <div id="dashboard-placements" class="college-dashboard-section">
+                        <div class="college-section-header">
+                            <div class="college-section-title-group">
+                                <h2><i class="fa-solid fa-briefcase" style="color:var(--brand-blue);"></i> Placement Corner & Corporate Drives</h2>
+                                <p>Campus recruitment drives by top IT tech recruiters.</p>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" ng-click="setActiveTab('placements')">Browse All Placement Drives</button>
+                        </div>
+
+                        <div class="college-card-grid">
+                            <div class="college-placement-card" ng-repeat="place in placements">
+                                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+                                    <div>
+                                        <h3 style="font-size:1.05rem; font-weight:800; color:var(--text-primary);">{{ place.company }}</h3>
+                                        <div style="font-size:0.85rem; font-weight:700; color:var(--brand-blue);">{{ place.role }}</div>
+                                    </div>
+                                    <span class="badge" style="background-color:var(--brand-green-light); color:var(--brand-green); border:none;">{{ place.status }}</span>
+                                </div>
+
+                                <div style="font-size:0.9rem; font-weight:800; color:var(--text-primary); margin-bottom:10px;">
+                                    Package: {{ place.package }}
+                                </div>
+
+                                <div style="font-size:0.775rem; color:var(--text-muted); margin-bottom:12px; display:flex; flex-direction:column; gap:4px;">
+                                    <div><i class="fa-solid fa-graduation-cap"></i> <strong>Eligibility:</strong> {{ place.eligibility }}</div>
+                                    <div><i class="fa-regular fa-calendar"></i> <strong>Interview Date:</strong> {{ place.interviewDate | date:'mediumDate' }}</div>
+                                    <div><i class="fa-solid fa-clock"></i> <strong>Deadline:</strong> {{ place.deadline | date:'mediumDate' }}</div>
+                                </div>
+
+                                <div style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:14px;">
+                                    <span class="badge badge-secondary" ng-repeat="tag in place.tags">{{ tag }}</span>
+                                </div>
+
+                                <button class="btn btn-primary btn-sm" style="width:100%;" ng-click="applyPlacementModal(place)">
+                                    Submit Placement Profile
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Academic Resources -->
+                    <div id="dashboard-resources" class="college-dashboard-section">
+                        <div class="college-section-header">
+                            <div class="college-section-title-group">
+                                <h2><i class="fa-solid fa-book" style="color:var(--brand-blue);"></i> Academic Resources Repository</h2>
+                                <p>KTU notes, question paper archives, lab workbooks & study guides.</p>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" ng-click="setActiveTab('resources')">Open Academic Repository</button>
+                        </div>
+
+                        <div class="ref-card">
+                            <div class="table-wrapper">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Course Code</th>
+                                            <th>Resource Title</th>
+                                            <th>Subject</th>
+                                            <th>Category</th>
+                                            <th>Format</th>
+                                            <th>Size</th>
+                                            <th>Author</th>
+                                            <th>Downloads</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="res in resources">
+                                            <td><strong>{{ res.code }}</strong></td>
+                                            <td>{{ res.title }}</td>
+                                            <td><span class="badge badge-secondary">{{ res.subject }}</span></td>
+                                            <td>{{ res.category }}</td>
+                                            <td><code>{{ res.format | lowercase }}</code></td>
+                                            <td>{{ res.size }}</td>
+                                            <td>{{ res.author }}</td>
+                                            <td>{{ res.downloads | number }}</td>
+                                            <td>
+                                                <button class="btn btn-secondary btn-sm" ng-click="downloadResource(res)">
+                                                    <i class="fa-solid fa-download"></i> Download
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 5: Student Marketplace -->
+                    <div id="dashboard-marketplace" class="college-dashboard-section">
+                        <div class="college-section-header">
+                            <div class="college-section-title-group">
+                                <h2><i class="fa-solid fa-bag-shopping" style="color:var(--brand-blue);"></i> Student Marketplace Highlights</h2>
+                                <p>Peer-to-peer textbook & hardware marketplace for FISAT students.</p>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" ng-click="setActiveTab('marketplace')">View All Marketplace Products</button>
+                        </div>
+
+                        <div class="college-card-grid">
+                            <div class="ref-card" ng-repeat="prod in marketplace">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                                    <span class="badge badge-secondary">{{ prod.category }}</span>
+                                    <span class="badge badge-low">{{ prod.condition }}</span>
+                                </div>
+
+                                <h3 style="font-size:0.95rem; font-weight:800; margin-bottom:6px; color:var(--text-primary);">{{ prod.title }}</h3>
+                                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">{{ prod.description }}</p>
+
+                                <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
+                                    <span style="font-size:1.2rem; font-weight:900; color:var(--brand-blue);">{{ prod.price | currency:'₹':2 }}</span>
+                                    <span style="font-size:0.725rem; color:var(--text-muted);">Posted: {{ prod.datePosted | date:'shortDate' }}</span>
+                                </div>
+
+                                <div style="font-size:0.775rem; background-color:var(--bg-surface-secondary); padding:8px 10px; border-radius:var(--radius-md); color:var(--text-muted);">
+                                    <div><strong>Seller:</strong> {{ prod.sellerName }}</div>
+                                    <div style="margin-top:2px;"><strong>Contact:</strong> {{ prod.contact }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
+                <!-- 2. Notice Board Module -->
                 <div class="tab-motion-wrapper" ng-if="activeTab === 'notices'">
                     <div class="toolbar">
                         <div class="toolbar-group">
@@ -212,77 +428,81 @@
                         </div>
 
                         <div class="toolbar-group">
-                            <input type="text" class="form-control" placeholder="Search MCA circulars..." ng-model="noticeSearchText" style="width:220px;">
+                            <input type="text" class="form-control" placeholder="Notice Search..." ng-model="noticeSearchText" style="width:220px;">
                             <button class="btn btn-primary" ng-click="showNoticeModal = true">
                                 <i class="fa-solid fa-plus"></i> Post Circular
                             </button>
                         </div>
                     </div>
 
-                    <div>
-                        <div class="notice-item" ng-repeat="notice in notices | filter:{department: noticeFilterDept, priority: noticeFilterPriority} | filter:noticeSearchText" ng-class="{'pinned': notice.pinned}">
-                            <div class="notice-header">
-                                <span class="notice-ref">{{ notice.circularNo }}</span>
-                                <span class="badge" ng-class="'badge-' + (notice.priority | lowercase)">{{ notice.priority | uppercase }}</span>
+                    <div class="ref-card">
+                        <div class="notice-board-list">
+                            <div class="notice-ref-item" ng-repeat="notice in notices | filter:{department: noticeFilterDept, priority: noticeFilterPriority} | filter:noticeSearchText">
+                                <div class="notice-ref-header">
+                                    <div class="notice-ref-title">{{ notice.title }}</div>
+                                    <span class="badge" ng-class="{'badge-high': notice.priority === 'High', 'badge-medium': notice.priority === 'Medium'}">{{ notice.priority | uppercase }}</span>
+                                </div>
+                                <div class="notice-ref-desc">{{ notice.description }}</div>
+                                <div style="margin-top:10px; font-size:0.75rem; color:var(--text-muted); display:flex; gap:16px;">
+                                    <span><i class="fa-solid fa-building"></i> {{ notice.department }}</span>
+                                    <span><i class="fa-regular fa-calendar"></i> {{ notice.date | date:'mediumDate' }}</span>
+                                </div>
                             </div>
-                            <div class="notice-title">{{ notice.title }}</div>
-                            <div class="notice-desc">{{ notice.description }}</div>
-                            <div style="margin-top:10px; font-size:0.775rem; color:var(--text-muted); display:flex; gap:16px;">
-                                <span><i class="fa-solid fa-building"></i> {{ notice.department }}</span>
-                                <span><i class="fa-regular fa-calendar"></i> Issued: {{ notice.date | date:'fullDate' }}</span>
-                            </div>
-                        </div>
 
-                        <div ng-show="(notices | filter:{department: noticeFilterDept, priority: noticeFilterPriority} | filter:noticeSearchText).length === 0" style="text-align:center; padding:32px; color:var(--text-muted);">
-                            No MCA circulars match the selected filter criteria.
+                            <div ng-hide="(notices | filter:{department: noticeFilterDept, priority: noticeFilterPriority} | filter:noticeSearchText).length > 0" style="text-align:center; padding:32px; color:var(--text-muted);">
+                                No campus notices match the search criteria.
+                            </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- 3. Event Registration Module -->
                 <div class="tab-motion-wrapper" ng-if="activeTab === 'events'">
                     <div class="toolbar">
                         <div class="toolbar-group">
-                            <span style="font-size:0.8rem; font-weight:600;">Category Filter:</span>
+                            <span style="font-size:0.8rem; font-weight:700;">Event Category Filter:</span>
                             <button class="btn btn-sm" ng-repeat="cat in eventCategories" ng-class="{'btn-primary': eventCategoryFilter === cat, 'btn-secondary': eventCategoryFilter !== cat}" ng-click="$parent.eventCategoryFilter = cat">
                                 {{ cat }}
                             </button>
                         </div>
                     </div>
 
-                    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:20px;">
-                        <div class="panel-card" ng-repeat="evt in events | filter:(eventCategoryFilter === 'All' ? '' : eventCategoryFilter)">
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
-                                <span class="badge badge-secondary">{{ evt.code }}</span>
-                                <span class="badge badge-low">{{ evt.category }}</span>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap:16px;">
+                        <div class="ref-card" style="display:flex; flex-direction:column; justify-content:space-between; padding:20px;" ng-repeat="evt in events | filter:(eventCategoryFilter === 'All' ? '' : eventCategoryFilter)">
+                            <div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                    <span class="badge badge-secondary" style="font-size:0.7rem;">{{ evt.code }}</span>
+                                    <span class="badge badge-low" style="font-size:0.7rem;">{{ evt.category }}</span>
+                                </div>
+
+                                <h3 style="font-size:0.95rem; font-weight:800; color:var(--text-primary); margin-bottom:8px; line-height:1.35;">{{ evt.name }}</h3>
+
+                                <div style="font-size:0.775rem; color:var(--text-muted); margin-bottom:16px; display:flex; flex-direction:column; gap:4px;">
+                                    <div><i class="fa-regular fa-calendar"></i> {{ evt.date | date:'mediumDate' }}</div>
+                                    <div><i class="fa-solid fa-location-dot"></i> {{ evt.venue }}</div>
+                                </div>
                             </div>
 
-                            <h3 style="font-size:0.95rem; margin-bottom:8px; line-height:1.4;">{{ evt.name }}</h3>
-                            <p style="font-size:0.825rem; color:var(--text-secondary); margin-bottom:12px;">{{ evt.description }}</p>
+                            <div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; font-weight:700; color:var(--text-muted); margin-bottom:12px; background-color:var(--bg-surface-secondary); padding:8px 12px; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
+                                    <span>Available Seats</span>
+                                    <span style="color:var(--brand-blue); font-weight:800;">{{ evt.totalSeats - evt.bookedSeats }} / {{ evt.totalSeats }}</span>
+                                </div>
 
-                            <div style="font-size:0.775rem; color:var(--text-muted); margin-bottom:12px; display:flex; flex-direction:column; gap:4px;">
-                                <div><i class="fa-regular fa-calendar"></i> Date: <strong>{{ evt.date | date:'mediumDate' }}</strong></div>
-                                <div><i class="fa-solid fa-location-dot"></i> Venue: {{ evt.venue }}</div>
-                                <div><i class="fa-solid fa-users"></i> Organizer: {{ evt.organizer }}</div>
+                                <button class="btn btn-primary btn-sm" style="width:100%;" ng-click="openRegistrationModal(evt)" ng-disabled="evt.bookedSeats >= evt.totalSeats">
+                                    {{ evt.bookedSeats >= evt.totalSeats ? 'Registration Closed' : 'Register' }}
+                                </button>
                             </div>
-
-                            <div style="height:6px; background-color:var(--bg-surface-secondary); border-radius:3px; overflow:hidden; margin-bottom:6px;">
-                                <div class="progress-bar-fill" ng-style="getSeatProgressStyle(evt)"></div>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; font-size:0.725rem; color:var(--text-muted); margin-bottom:14px;">
-                                <span>Seats Reserved: {{ evt.bookedSeats | number }} / {{ evt.totalSeats }}</span>
-                                <span>{{ getSeatsPercentage(evt) }}% Full</span>
-                            </div>
-
-                            <button class="btn btn-primary btn-sm" style="width:100%;" ng-click="openRegistrationModal(evt)" ng-disabled="evt.bookedSeats >= evt.totalSeats">
-                                {{ evt.bookedSeats >= evt.totalSeats ? 'Registration Closed' : 'Register Attendee' }}
-                            </button>
                         </div>
                     </div>
 
-                    <div class="panel-card" style="margin-top:28px;">
-                        <div class="panel-header">
-                            <h3><i class="fa-solid fa-list-check"></i> Confirmed MCA Registration Roster</h3>
-                            <span class="badge badge-success">Total Records: {{ registeredStudents.length }}</span>
+                    <div class="ref-card" style="margin-top:28px;">
+                        <div class="ref-card-header">
+                            <div class="ref-card-title">
+                                <i class="fa-solid fa-list-check"></i>
+                                <span>Confirmed Event Registrations Roster</span>
+                            </div>
+                            <span class="badge" style="background-color:var(--brand-green-light); color:var(--brand-green); border:none;">Total Records: {{ registeredStudents.length }}</span>
                         </div>
 
                         <div class="table-wrapper">
@@ -314,10 +534,11 @@
                     </div>
                 </div>
 
+                <!-- 4. Lost & Found Portal -->
                 <div class="tab-motion-wrapper" ng-if="activeTab === 'lostfound'">
                     <div class="toolbar">
                         <div class="toolbar-group">
-                            <span style="font-size:0.8rem; font-weight:600;">Status Filter:</span>
+                            <span style="font-size:0.8rem; font-weight:700;">Status Filter:</span>
                             <button class="btn btn-sm" ng-class="{'btn-primary': lostFoundStatusFilter === 'All', 'btn-secondary': lostFoundStatusFilter !== 'All'}" ng-click="lostFoundStatusFilter = 'All'">All Items</button>
                             <button class="btn btn-sm" ng-class="{'btn-primary': lostFoundStatusFilter === 'Lost', 'btn-secondary': lostFoundStatusFilter !== 'Lost'}" ng-click="lostFoundStatusFilter = 'Lost'">Unclaimed Lost Items</button>
                             <button class="btn btn-sm" ng-class="{'btn-primary': lostFoundStatusFilter === 'Found', 'btn-secondary': lostFoundStatusFilter !== 'Found'}" ng-click="lostFoundStatusFilter = 'Found'">Found Items</button>
@@ -329,27 +550,28 @@
                     </div>
 
                     <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap:20px;">
-                        <div class="panel-card" ng-repeat="item in lostAndFound | filter:(lostFoundStatusFilter === 'All' ? '' : lostFoundStatusFilter)">
+                        <div class="ref-card" ng-repeat="item in lostAndFound | filter:(lostFoundStatusFilter === 'All' ? '' : lostFoundStatusFilter)">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                                 <span class="badge badge-secondary">{{ item.itemRef }}</span>
                                 <span ng-switch="item.status">
-                                    <span ng-switch-when="Lost" class="badge badge-high">{{ item.status | uppercase }}</span>
-                                    <span ng-switch-when="Found" class="badge badge-success">{{ item.status | uppercase }}</span>
+                                    <span ng-switch-when="Lost" class="badge" style="background-color:var(--brand-red-light); color:var(--brand-red); border:none;">{{ item.status | uppercase }}</span>
+                                    <span ng-switch-when="Found" class="badge" style="background-color:var(--brand-green-light); color:var(--brand-green); border:none;">{{ item.status | uppercase }}</span>
                                 </span>
                             </div>
 
                             <h3 style="font-size:0.95rem; margin-bottom:6px;">{{ item.title }}</h3>
-                            <p style="font-size:0.825rem; color:var(--text-secondary); margin-bottom:12px;">{{ item.description }}</p>
+                            <p style="font-size:0.825rem; color:var(--text-muted); margin-bottom:12px;">{{ item.description }}</p>
 
                             <div style="font-size:0.775rem; background-color:var(--bg-surface-secondary); padding:10px; border-radius:var(--radius-md); color:var(--text-muted); display:flex; flex-direction:column; gap:4px;">
                                 <div><i class="fa-solid fa-location-dot"></i> <strong>Location:</strong> {{ item.location }}</div>
-                                <div><i class="fa-regular fa-calendar"></i> <strong>Recorded:</strong> {{ item.dateFound | date:'mediumDate' }}</div>
+                                <div><i class="fa-regular fa-calendar"></i> <strong>Date Found:</strong> {{ item.dateFound | date:'mediumDate' }}</div>
                                 <div><i class="fa-solid fa-user-check"></i> <strong>Custodian:</strong> {{ item.contactPerson }} ({{ item.phone }})</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- 5. Student Marketplace -->
                 <div class="tab-motion-wrapper" ng-if="activeTab === 'marketplace'">
                     <div class="toolbar">
                         <div class="toolbar-group">
@@ -359,7 +581,7 @@
                         </div>
 
                         <div class="toolbar-group">
-                            <input type="text" class="form-control" placeholder="Search marketplace..." ng-model="marketplaceSearch" style="width:240px;">
+                            <input type="text" class="form-control" placeholder="Marketplace Search..." ng-model="marketplaceSearch" style="width:240px;">
                             <button class="btn btn-primary" ng-click="showMarketplaceModal = true">
                                 <i class="fa-solid fa-tag"></i> List Product
                             </button>
@@ -367,17 +589,17 @@
                     </div>
 
                     <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap:20px;">
-                        <div class="panel-card" ng-repeat="prod in marketplace | filter:(marketplaceCategoryFilter === 'All' ? '' : marketplaceCategoryFilter) | filter:marketplaceSearch">
+                        <div class="ref-card" ng-repeat="prod in marketplace | filter:(marketplaceCategoryFilter === 'All' ? '' : marketplaceCategoryFilter) | filter:marketplaceSearch">
                             <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                                 <span class="badge badge-secondary">{{ prod.category }}</span>
                                 <span class="badge badge-low">{{ prod.condition }}</span>
                             </div>
 
                             <h3 style="font-size:0.95rem; margin-bottom:6px;">{{ prod.title }}</h3>
-                            <p style="font-size:0.825rem; color:var(--text-secondary); margin-bottom:12px;">{{ prod.description }}</p>
+                            <p style="font-size:0.825rem; color:var(--text-muted); margin-bottom:12px;">{{ prod.description }}</p>
 
                             <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
-                                <span style="font-size:1.2rem; font-weight:800; color:var(--text-primary);">{{ prod.price | currency:'₹':2 }}</span>
+                                <span style="font-size:1.2rem; font-weight:900; color:var(--brand-blue);">{{ prod.price | currency:'₹':2 }}</span>
                                 <span style="font-size:0.725rem; color:var(--text-muted);">Posted: {{ prod.datePosted | date:'shortDate' }}</span>
                             </div>
 
@@ -389,30 +611,30 @@
                     </div>
                 </div>
 
+                <!-- 6. Placement Corner -->
                 <div class="tab-motion-wrapper" ng-if="activeTab === 'placements'">
                     <div class="toolbar">
                         <div class="toolbar-group" style="width:100%;">
-                            <input type="text" class="form-control" placeholder="Search MCA placement drives..." ng-model="placementSearch" style="width:100%;">
+                            <input type="text" class="form-control" placeholder="Placement Search..." ng-model="placementSearch" style="width:100%;">
                         </div>
                     </div>
 
                     <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap:20px;">
-                        <div class="panel-card" ng-repeat="place in placements | filter:placementSearch">
+                        <div class="ref-card" ng-repeat="place in placements | filter:placementSearch">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                 <div>
                                     <h3 style="font-size:1.05rem; font-weight:800;">{{ place.company }}</h3>
-                                    <div style="font-size:0.875rem; font-weight:600; color:var(--text-primary);">{{ place.role }}</div>
+                                    <div style="font-size:0.875rem; font-weight:600; color:var(--brand-blue);">{{ place.role }}</div>
                                 </div>
-                                <span class="badge" ng-class="{'badge-high': place.status === 'Registration Open', 'badge-medium': place.status === 'Closing Soon'}">{{ place.status }}</span>
+                                <span class="badge" style="background-color:var(--brand-green-light); color:var(--brand-green); border:none;">{{ place.status }}</span>
                             </div>
 
                             <div style="font-size:0.9rem; font-weight:800; color:var(--text-primary); margin-bottom:10px;">
-                                CTC: {{ place.package }}
+                                Package: {{ place.package }}
                             </div>
 
-                            <div style="font-size:0.775rem; color:var(--text-secondary); margin-bottom:12px; display:flex; flex-direction:column; gap:4px;">
+                            <div style="font-size:0.775rem; color:var(--text-muted); margin-bottom:12px; display:flex; flex-direction:column; gap:4px;">
                                 <div><i class="fa-solid fa-graduation-cap"></i> <strong>Eligibility:</strong> {{ place.eligibility }}</div>
-                                <div><i class="fa-solid fa-location-dot"></i> <strong>Location:</strong> {{ place.location }}</div>
                                 <div><i class="fa-regular fa-calendar"></i> <strong>Interview Date:</strong> {{ place.interviewDate | date:'mediumDate' }}</div>
                                 <div><i class="fa-solid fa-clock"></i> <strong>Deadline:</strong> {{ place.deadline | date:'mediumDate' }}</div>
                             </div>
@@ -422,22 +644,23 @@
                             </div>
 
                             <button class="btn btn-primary btn-sm" style="width:100%;" ng-click="applyPlacementModal(place)">
-                                Submit Application Profile
+                                Submit Placement Application
                             </button>
                         </div>
                     </div>
                 </div>
 
+                <!-- 7. Academic Resources -->
                 <div class="tab-motion-wrapper" ng-if="activeTab === 'resources'">
                     <div class="toolbar">
                         <div class="toolbar-group">
-                            <label style="font-size:0.8rem; font-weight:600;">Category Selector (ng-options):</label>
+                            <label style="font-size:0.8rem; font-weight:700;">Category Selector (ng-options):</label>
                             <select class="form-select" ng-model="selectedResourceCategory" ng-options="opt.value as opt.label for opt in resourceCategoriesOptions" style="width:260px;">
                             </select>
                         </div>
                     </div>
 
-                    <div class="panel-card">
+                    <div class="ref-card">
                         <div class="table-wrapper">
                             <table class="data-table">
                                 <thead>
@@ -474,14 +697,17 @@
                         </div>
                     </div>
                 </div>
+
             </div>
+
         </main>
     </div>
 
+    <!-- Modals & Form Validation -->
     <div class="modal-overlay" ng-show="showEventModal" ng-cloak>
         <div class="modal-box">
             <div class="modal-head">
-                <h3>FISAT MCA Event Registration Form</h3>
+                <h3>FISAT Event Registration Form</h3>
                 <button class="close-x" ng-click="showEventModal = false">&times;</button>
             </div>
             
@@ -493,9 +719,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Full Student Name <span style="color:var(--text-primary);">*</span></label>
+                        <label>Full Student Name <span style="color:var(--brand-red);">*</span></label>
                         <input type="text" name="studentName" class="form-control" ng-model="regForm.studentName" required ng-minlength="3" ng-maxlength="40" placeholder="e.g. Allen John Joy">
-                        <div class="validation-error" ng-show="eventForm.studentName.$touched && eventForm.studentName.$invalid">
+                        <div style="color:var(--brand-red); font-size:0.75rem; margin-top:4px;" ng-show="eventForm.studentName.$touched && eventForm.studentName.$invalid">
                             <span ng-show="eventForm.studentName.$error.required">Student Name is mandatory.</span>
                             <span ng-show="eventForm.studentName.$error.minlength">Minimum 3 characters required.</span>
                             <span ng-show="eventForm.studentName.$error.maxlength">Maximum 40 characters allowed.</span>
@@ -503,27 +729,27 @@
                     </div>
 
                     <div class="form-group">
-                        <label>FISAT Roll Number <span style="color:var(--text-primary);">*</span></label>
-                        <input type="text" name="studentId" class="form-control" ng-model="regForm.studentId" required ng-pattern="/^[A-Za-z0-9]{8,12}$/" placeholder="e.g. FIT24MCA001">
-                        <div class="validation-error" ng-show="eventForm.studentId.$touched && eventForm.studentId.$invalid">
+                        <label>FISAT Student Roll Number <span style="color:var(--brand-red);">*</span></label>
+                        <input type="text" name="studentId" class="form-control" ng-model="regForm.studentId" required ng-pattern="/^[A-Za-z0-9]{8,12}$/" placeholder="e.g. FIT24CS001">
+                        <div style="color:var(--brand-red); font-size:0.75rem; margin-top:4px;" ng-show="eventForm.studentId.$touched && eventForm.studentId.$invalid">
                             <span ng-show="eventForm.studentId.$error.required">FISAT Roll Number is mandatory.</span>
-                            <span ng-show="eventForm.studentId.$error.pattern">Invalid Roll Number format (e.g., FIT24MCA001).</span>
+                            <span ng-show="eventForm.studentId.$error.pattern">Invalid Roll Number format (e.g., FIT24CS001).</span>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>FISAT Institutional Email <span style="color:var(--text-primary);">*</span></label>
+                        <label>FISAT Institutional Email <span style="color:var(--brand-red);">*</span></label>
                         <input type="email" name="email" class="form-control" ng-model="regForm.email" required placeholder="e.g. allen.joy@fisat.ac.in">
-                        <div class="validation-error" ng-show="eventForm.email.$touched && eventForm.email.$invalid">
+                        <div style="color:var(--brand-red); font-size:0.75rem; margin-top:4px;" ng-show="eventForm.email.$touched && eventForm.email.$invalid">
                             <span ng-show="eventForm.email.$error.required">Email is mandatory.</span>
                             <span ng-show="eventForm.email.$error.email">Please enter a valid FISAT email address.</span>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>10-Digit Contact Phone Number <span style="color:var(--text-primary);">*</span></label>
+                        <label>10-Digit Contact Phone Number <span style="color:var(--brand-red);">*</span></label>
                         <input type="text" name="phone" class="form-control" ng-model="regForm.phone" required ng-pattern="/^[0-9]{10}$/" placeholder="e.g. 9876543210">
-                        <div class="validation-error" ng-show="eventForm.phone.$touched && eventForm.phone.$invalid">
+                        <div style="color:var(--brand-red); font-size:0.75rem; margin-top:4px;" ng-show="eventForm.phone.$touched && eventForm.phone.$invalid">
                             <span ng-show="eventForm.phone.$error.required">Phone number is mandatory.</span>
                             <span ng-show="eventForm.phone.$error.pattern">Must be an exact 10-digit number.</span>
                         </div>
@@ -532,9 +758,13 @@
                     <div class="form-group">
                         <label>Department</label>
                         <select class="form-select" ng-model="regForm.department">
-                            <option value="Department of Computer Applications (MCA)">Department of Computer Applications (MCA)</option>
-                            <option value="Department of Computer Science & Engg (CSE)">Department of Computer Science & Engg (CSE)</option>
-                            <option value="Department of Electronics & Comm Engg (ECE)">Department of Electronics & Comm Engg (ECE)</option>
+                            <option value="CSE">Department of Computer Science & Engineering (CSE)</option>
+                            <option value="ECE">Department of Electronics & Communication (ECE)</option>
+                            <option value="ME">Department of Mechanical Engineering (ME)</option>
+                            <option value="EEE">Department of Electrical & Electronics (EEE)</option>
+                            <option value="CE">Department of Civil Engineering (CE)</option>
+                            <option value="MCA">Department of Computer Applications (MCA)</option>
+                            <option value="MBA">Department of Business Administration (MBA)</option>
                         </select>
                     </div>
 
@@ -542,7 +772,7 @@
                         <label>
                             <input type="checkbox" name="agreeTerms" ng-model="regForm.agreeTerms" required> I certify that all details provided are accurate and agree to FISAT event guidelines.
                         </label>
-                        <div class="validation-error" ng-show="eventForm.agreeTerms.$touched && eventForm.agreeTerms.$invalid">
+                        <div style="color:var(--brand-red); font-size:0.75rem; margin-top:4px;" ng-show="eventForm.agreeTerms.$touched && eventForm.agreeTerms.$invalid">
                             <span>Agreement to rules is required.</span>
                         </div>
                     </div>
@@ -561,17 +791,13 @@
     <div class="modal-overlay" ng-show="showNoticeModal" ng-cloak>
         <div class="modal-box">
             <div class="modal-head">
-                <h3>Publish FISAT Departmental Circular</h3>
+                <h3>Publish FISAT Circular</h3>
                 <button class="close-x" ng-click="showNoticeModal = false">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
                     <label>Circular Title</label>
                     <input type="text" class="form-control" ng-model="newNotice.title" placeholder="Official subject heading...">
-                </div>
-                <div class="form-group">
-                    <label>Reference Circular Number (Optional)</label>
-                    <input type="text" class="form-control" ng-model="newNotice.circularNo" placeholder="e.g. FISAT/MCA/2026/CIRC-085">
                 </div>
                 <div class="form-group">
                     <label>Issuing Department</label>
@@ -590,11 +816,6 @@
                 <div class="form-group">
                     <label>Circular Description</label>
                     <textarea class="form-control" rows="4" ng-model="newNotice.description" placeholder="Enter complete notice text..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" ng-model="newNotice.pinned"> Pin to dashboard overview
-                    </label>
                 </div>
             </div>
             <div class="modal-foot">
@@ -633,7 +854,7 @@
                 </div>
                 <div class="form-group">
                     <label>FISAT Campus Location</label>
-                    <input type="text" class="form-control" ng-model="newItem.location" placeholder="e.g. MCA Computer Lab 3">
+                    <input type="text" class="form-control" ng-model="newItem.location" placeholder="e.g. FISAT Central Library">
                 </div>
                 <div class="form-group">
                     <label>Contact Custodian Name & Phone</label>
@@ -644,7 +865,7 @@
                 </div>
                 <div class="form-group">
                     <label>Additional Particulars</label>
-                    <textarea class="form-control" rows="2" ng-model="newItem.description" placeholder="Identifiers, serial numbers, case colors..."></textarea>
+                    <textarea class="form-control" rows="2" ng-model="newItem.description" placeholder="Identifiers, serial numbers..."></textarea>
                 </div>
             </div>
             <div class="modal-foot">
@@ -663,7 +884,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>Item Name / Title</label>
-                    <input type="text" class="form-control" ng-model="newProduct.title" placeholder="e.g. KTU MCA Textbook Bundle">
+                    <input type="text" class="form-control" ng-model="newProduct.title" placeholder="e.g. KTU Engineering Reference Bundle">
                 </div>
                 <div class="form-group">
                     <label>Category</label>
@@ -691,7 +912,7 @@
                 </div>
                 <div class="form-group">
                     <label>Item Description</label>
-                    <textarea class="form-control" rows="2" ng-model="newProduct.description" placeholder="Details about edition, inclusions, warranty..."></textarea>
+                    <textarea class="form-control" rows="2" ng-model="newProduct.description" placeholder="Details about edition, inclusions..."></textarea>
                 </div>
             </div>
             <div class="modal-foot">
@@ -711,11 +932,11 @@
                 <p style="margin-bottom:12px; font-size:0.875rem;">Applying for position <strong>{{ selectedPlacement.role }}</strong> at <strong>{{ selectedPlacement.company }}</strong>.</p>
                 <div class="form-group">
                     <label>Student FISAT Roll Number</label>
-                    <input type="text" class="form-control" value="FIT24MCA001 (Allen John Joy)" readonly>
+                    <input type="text" class="form-control" value="FIT24CS001 (Allen John Joy)" readonly>
                 </div>
                 <div class="form-group">
                     <label>Verified Placement Resume Link</label>
-                    <input type="text" class="form-control" placeholder="https://portal.fisat.ac.in/resumes/FIT24MCA001.pdf">
+                    <input type="text" class="form-control" placeholder="https://portal.fisat.ac.in/resumes/FIT24CS001.pdf">
                 </div>
             </div>
             <div class="modal-foot">
