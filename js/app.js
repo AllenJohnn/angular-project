@@ -466,13 +466,76 @@ app.controller('MainController', ['$scope', '$window', '$timeout', '$interval', 
     $scope.triggerToast('Application submitted to ' + p.companyName + ' for ' + p.jobRole);
   };
 
-  $scope.resourceCategories = ['All Categories', 'Subject Notes', 'Previous Year Question Papers', 'Lab Manuals', 'Study Materials'];
+  $scope.resourceCategories = [
+    'All Categories',
+    'Subject Notes',
+    'Previous Year Question Papers',
+    'Lab Manuals',
+    'Study Materials',
+    'Syllabus & Curriculum',
+    'Project & Internship Guides',
+    'Reference E-Books',
+    'Question Banks & Answer Keys'
+  ];
+  $scope.resourceDepartments = ['All Departments', 'MCA', 'CSE', 'ECE', 'EEE', 'ME/CE', 'MBA'];
+  $scope.resourceSemesters = ['All Semesters', 'Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6', 'Semester 7', 'Semester 8'];
+
   $scope.selectedResourceCategory = 'All Categories';
+  $scope.selectedResourceDept = 'All Departments';
+  $scope.selectedResourceSem = 'All Semesters';
+  $scope.searchResourceQuery = '';
+
+  $scope.selectResourceCategory = function(cat) {
+    $scope.selectedResourceCategory = cat;
+  };
+
+  $scope.clearResourceFilters = function() {
+    $scope.selectedResourceCategory = 'All Categories';
+    $scope.selectedResourceDept = 'All Departments';
+    $scope.selectedResourceSem = 'All Semesters';
+    $scope.searchResourceQuery = '';
+  };
+
   $scope.academicResources = [
-    { id: 1, title: "MCA Semester 3 Advanced Java & Spring Boot Notes", category: "Subject Notes", subject: "RLMCA201", semester: "Semester 3", fileFormat: "PDF", size: "14.2 MB", downloads: 412 },
-    { id: 2, title: "FISAT Cloud Computing & DevOps Lab Manual 2026", category: "Lab Manuals", subject: "RLMCA231", semester: "Semester 3", fileFormat: "PDF", size: "8.5 MB", downloads: 289 },
-    { id: 3, title: "KTU MCA End-Sem Question Paper Archive (2025)", category: "Previous Year Question Papers", subject: "RLMCA203", semester: "Semester 3", fileFormat: "PDF", size: "2.1 MB", downloads: 654 },
-    { id: 4, title: "Design & Analysis of Algorithms Quick Revision Guide", category: "Study Materials", subject: "RLMCA205", semester: "Semester 3", fileFormat: "DOCX", size: "5.8 MB", downloads: 230 }
+    // Subject Notes
+    { id: 1, title: "MCA Semester 3 Advanced Java & Spring Boot Core Notes", category: "Subject Notes", subject: "RLMCA201", department: "MCA", semester: "Semester 3", fileFormat: "PDF", size: "14.2 MB", downloads: 412, author: "Dept. of Computer Applications" },
+    { id: 2, title: "B.Tech CSE Sem 5 Design & Analysis of Algorithms Notes", category: "Subject Notes", subject: "CST301", department: "CSE", semester: "Semester 5", fileFormat: "PDF", size: "11.5 MB", downloads: 538, author: "Prof. Rajesh Kumar" },
+    { id: 3, title: "ECE Sem 4 Signals & Systems Comprehensive Lecture Notes", category: "Subject Notes", subject: "ECT204", department: "ECE", semester: "Semester 4", fileFormat: "PDF", size: "9.8 MB", downloads: 310, author: "Dept. of ECE" },
+    { id: 4, title: "MBA Sem 2 Financial Management & Accounting Notes", category: "Subject Notes", subject: "MBT202", department: "MBA", semester: "Semester 2", fileFormat: "PDF", size: "7.3 MB", downloads: 275, author: "FISAT Business School" },
+    { id: 5, title: "EEE Sem 5 Power Systems & Smart Grid Engineering Notes", category: "Subject Notes", subject: "EET301", department: "EEE", semester: "Semester 5", fileFormat: "PDF", size: "12.4 MB", downloads: 198, author: "Dept. of EEE" },
+
+    // Previous Year Question Papers
+    { id: 6, title: "KTU MCA End-Sem Question Paper Archive (2022-2025)", category: "Previous Year Question Papers", subject: "RLMCA203", department: "MCA", semester: "Semester 3", fileFormat: "PDF", size: "18.5 MB", downloads: 842, author: "KTU Examination Cell" },
+    { id: 7, title: "KTU B.Tech CSE Database Management Systems Solved PYQs", category: "Previous Year Question Papers", subject: "CST204", department: "CSE", semester: "Semester 4", fileFormat: "PDF", size: "8.2 MB", downloads: 620, author: "CSE Student Association" },
+    { id: 8, title: "KTU EEE Electrical Machines II Solved Past Papers", category: "Previous Year Question Papers", subject: "EET302", department: "EEE", semester: "Semester 5", fileFormat: "PDF", size: "10.1 MB", downloads: 345, author: "EEE Department" },
+    { id: 9, title: "KTU MBA Semester 1 Organizational Behavior Solved Papers", category: "Previous Year Question Papers", subject: "MBT101", department: "MBA", semester: "Semester 1", fileFormat: "PDF", size: "6.8 MB", downloads: 290, author: "FBS Archive" },
+
+    // Lab Manuals
+    { id: 10, title: "FISAT Cloud Computing & DevOps Lab Manual 2026", category: "Lab Manuals", subject: "RLMCA231", department: "MCA", semester: "Semester 3", fileFormat: "PDF", size: "8.5 MB", downloads: 389, author: "FISAT Super FabLab" },
+    { id: 11, title: "Data Structures & Algorithms C/C++ Lab Manual", category: "Lab Manuals", subject: "CSL201", department: "CSE", semester: "Semester 3", fileFormat: "PDF", size: "6.4 MB", downloads: 495, author: "CSE Lab Incharge" },
+    { id: 12, title: "VLSI Circuit Design & Cadence Tool Simulation Lab Guide", category: "Lab Manuals", subject: "ECL332", department: "ECE", semester: "Semester 6", fileFormat: "PDF", size: "15.1 MB", downloads: 215, author: "ECE VLSI Lab" },
+    { id: 13, title: "AutoCAD & Building Information Modeling (BIM) Lab Guide", category: "Lab Manuals", subject: "CEL204", department: "ME/CE", semester: "Semester 4", fileFormat: "PDF", size: "11.2 MB", downloads: 180, author: "Dept. of Civil Engg" },
+
+    // Study Materials
+    { id: 14, title: "Design & Analysis of Algorithms Quick Revision Guide", category: "Study Materials", subject: "RLMCA205", department: "MCA", semester: "Semester 3", fileFormat: "DOCX", size: "5.8 MB", downloads: 430, author: "Academic Cell" },
+    { id: 15, title: "Machine Learning & Deep Learning Formula Cheat Sheet", category: "Study Materials", subject: "CST401", department: "CSE", semester: "Semester 7", fileFormat: "PDF", size: "4.2 MB", downloads: 710, author: "AI Research Hub" },
+    { id: 16, title: "Python Programming for Data Science Fast-Track Handbook", category: "Study Materials", subject: "EST102", department: "CSE", semester: "Semester 2", fileFormat: "PDF", size: "6.9 MB", downloads: 540, author: "Coding Club FISAT" },
+
+    // Syllabus & Curriculum
+    { id: 17, title: "KTU Master of Computer Applications (MCA) 2024 Scheme Syllabus", category: "Syllabus & Curriculum", subject: "KTU-MCA-SCHEME", department: "MCA", semester: "Semester 1", fileFormat: "PDF", size: "3.5 MB", downloads: 915, author: "KTU Academic Council" },
+    { id: 18, title: "KTU B.Tech Computer Science & Engineering Curriculum Blueprint", category: "Syllabus & Curriculum", subject: "KTU-CSE-SCHEME", department: "CSE", semester: "Semester 1", fileFormat: "PDF", size: "4.1 MB", downloads: 1120, author: "KTU Academic Council" },
+
+    // Project & Internship Guides
+    { id: 19, title: "FISAT MCA Main Project Report Template & IEEE Format Guide", category: "Project & Internship Guides", subject: "RLMCA351", department: "MCA", semester: "Semester 4", fileFormat: "DOCX", size: "2.8 MB", downloads: 680, author: "PG Project Committee" },
+    { id: 20, title: "B.Tech CSE Mini-Project Architecture & Git Starter Repository", category: "Project & Internship Guides", subject: "CSD334", department: "CSE", semester: "Semester 6", fileFormat: "ZIP", size: "22.4 MB", downloads: 512, author: "Software Engineering Lab" },
+
+    // Reference E-Books
+    { id: 21, title: "Operating System Concepts (Silberschatz) Reference Summary", category: "Reference E-Books", subject: "CST206", department: "CSE", semester: "Semester 4", fileFormat: "PDF", size: "16.8 MB", downloads: 445, author: "Central Library FISAT" },
+    { id: 22, title: "Artificial Intelligence: A Modern Approach Study Pack", category: "Reference E-Books", subject: "CST402", department: "CSE", semester: "Semester 7", fileFormat: "PDF", size: "21.0 MB", downloads: 610, author: "Central Library FISAT" },
+
+    // Question Banks & Answer Keys
+    { id: 23, title: "Object Oriented Programming in Java Question Bank with Solutions", category: "Question Banks & Answer Keys", subject: "RLMCA202", department: "MCA", semester: "Semester 2", fileFormat: "PDF", size: "9.5 MB", downloads: 525, author: "Exam Preparation Cell" },
+    { id: 24, title: "Computer Networks Model Question Papers with Detailed Answer Key", category: "Question Banks & Answer Keys", subject: "CST303", department: "CSE", semester: "Semester 5", fileFormat: "PDF", size: "7.8 MB", downloads: 390, author: "Dept. of CSE" }
   ];
 
   $scope.downloadResource = function(res) {
@@ -481,7 +544,19 @@ app.controller('MainController', ['$scope', '$window', '$timeout', '$interval', 
   };
 
   $scope.filterResourceByCategory = function(res) {
-    return (!$scope.selectedResourceCategory || $scope.selectedResourceCategory === 'All Categories') ? true : res.category === $scope.selectedResourceCategory;
+    var matchesCategory = (!$scope.selectedResourceCategory || $scope.selectedResourceCategory === 'All Categories') ? true : res.category === $scope.selectedResourceCategory;
+    var matchesDept = (!$scope.selectedResourceDept || $scope.selectedResourceDept === 'All Departments') ? true : res.department === $scope.selectedResourceDept;
+    var matchesSem = (!$scope.selectedResourceSem || $scope.selectedResourceSem === 'All Semesters') ? true : res.semester === $scope.selectedResourceSem;
+    var matchesSearch = true;
+    if ($scope.searchResourceQuery && $scope.searchResourceQuery.trim() !== '') {
+      var q = $scope.searchResourceQuery.toLowerCase().trim();
+      matchesSearch = (res.title && res.title.toLowerCase().indexOf(q) !== -1) ||
+                      (res.subject && res.subject.toLowerCase().indexOf(q) !== -1) ||
+                      (res.category && res.category.toLowerCase().indexOf(q) !== -1) ||
+                      (res.department && res.department.toLowerCase().indexOf(q) !== -1) ||
+                      (res.fileFormat && res.fileFormat.toLowerCase().indexOf(q) !== -1);
+    }
+    return matchesCategory && matchesDept && matchesSem && matchesSearch;
   };
 
   $scope.contactForm = { name: 'Allen John Joy', email: 'allenjohn@gmail.com', message: '' };

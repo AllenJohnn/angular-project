@@ -1069,40 +1069,141 @@
 </div>
 </div>
 </div>
-<div ng-show="activeTab === 'resources'" class="animate-pageSlideIn pt-24 lg:pt-12 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" >
-<div class="text-center mb-12" data-aos="fade-up">
-<h2 class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white section-title font-display" >
-              Academic Resources Explorer
-            </h2>
+<div ng-show="activeTab === 'resources'" class="animate-pageSlideIn pt-24 lg:pt-12 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center mb-10" data-aos="fade-up">
+<div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-blue-50 dark:bg-blue-950/60 text-secondary dark:text-blue-300 text-xs font-bold rounded-full mb-3 uppercase tracking-wider border border-blue-200 dark:border-blue-800">
+<i class="fas fa-folder-open text-xs"></i>
+<span>FISAT Digital Knowledge Repository</span>
 </div>
-<div class="max-w-md mx-auto mb-8 bg-white dark:bg-slate-800 p-4 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm" data-aos="fade-up" data-aos-delay="100" >
-<label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-1" >Select Resource Category:</label
-            >
-<select ng-model="selectedResourceCategory" ng-options="cat for cat in resourceCategories" class="w-full bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-800 dark:text-white text-xs px-3.5 py-2.5 rounded-lg focus:outline-none focus:border-secondary transition duration-200" ></select>
+<h2 class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white section-title font-display">
+            Academic Resources Explorer
+          </h2>
+<p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-3 max-w-2xl mx-auto">
+          Access curated lecture notes, solved previous year question papers, lab manuals, e-books, and study guides for all departments.
+        </p>
 </div>
-<div class="max-w-4xl mx-auto space-y-3">
-<div ng-repeat="res in academicResources | filter:filterResourceByCategory" class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-100 dark:border-slate-700 flex items-center justify-between shadow-sm animated-card group" data-aos="fade-up" data-aos-delay="{{$index * 100}}" >
-<div class="flex items-center gap-4">
-<div class="w-11 h-11 bg-primary/10 text-primary dark:bg-blue-950 dark:text-blue-300 font-bold text-xs rounded-xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300" >
-                  {{res.fileFormat}}
-                </div>
+
+<!-- Filter & Search Controls Card -->
+<div class="max-w-5xl mx-auto mb-8 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm space-y-4" data-aos="fade-up" data-aos-delay="100">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-3.5">
+<!-- Search Query Input -->
+<div class="md:col-span-5 relative">
+<label class="block text-[11px] font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">
+              Search Resources
+            </label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
+<i class="fas fa-search text-xs"></i>
+</span>
+<input type="text" ng-model="searchResourceQuery" placeholder="Search by subject, code, topic..." class="w-full bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-800 dark:text-white text-xs pl-9 pr-8 py-2.5 rounded-xl focus:outline-none focus:border-secondary transition duration-200" />
+<button type="button" ng-show="searchResourceQuery" ng-click="searchResourceQuery = ''" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+<i class="fas fa-times text-xs"></i>
+</button>
+</div>
+</div>
+
+<!-- Category Select Dropdown -->
+<div class="md:col-span-3">
+<label class="block text-[11px] font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">
+              Category
+            </label>
+<select ng-model="selectedResourceCategory" ng-options="cat for cat in resourceCategories" class="w-full bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-800 dark:text-white text-xs px-3 py-2.5 rounded-xl focus:outline-none focus:border-secondary transition duration-200 cursor-pointer"></select>
+</div>
+
+<!-- Department Select Dropdown -->
+<div class="md:col-span-2">
+<label class="block text-[11px] font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">
+              Department
+            </label>
+<select ng-model="selectedResourceDept" ng-options="dept for dept in resourceDepartments" class="w-full bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-800 dark:text-white text-xs px-3 py-2.5 rounded-xl focus:outline-none focus:border-secondary transition duration-200 cursor-pointer"></select>
+</div>
+
+<!-- Semester Select Dropdown -->
+<div class="md:col-span-2">
+<label class="block text-[11px] font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">
+              Semester
+            </label>
+<select ng-model="selectedResourceSem" ng-options="sem for sem in resourceSemesters" class="w-full bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-800 dark:text-white text-xs px-3 py-2.5 rounded-xl focus:outline-none focus:border-secondary transition duration-200 cursor-pointer"></select>
+</div>
+</div>
+
+<!-- Quick Category Pills -->
+<div class="pt-2 border-t border-gray-100 dark:border-slate-700/60 flex items-center justify-between flex-wrap gap-2">
+<div class="flex items-center flex-wrap gap-1.5 py-1">
+<button ng-repeat="cat in resourceCategories" type="button" ng-click="selectResourceCategory(cat)" class="px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200 flex-shrink-0 cursor-pointer" ng-class="selectedResourceCategory === cat ? 'bg-primary text-white shadow-sm font-bold' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'">
+              {{cat}}
+            </button>
+</div>
+<button type="button" ng-show="selectedResourceCategory !== 'All Categories' || selectedResourceDept !== 'All Departments' || selectedResourceSem !== 'All Semesters' || searchResourceQuery" ng-click="clearResourceFilters()" class="text-xs font-bold text-red-500 hover:text-red-700 dark:hover:text-red-400 flex items-center gap-1 transition cursor-pointer">
+<i class="fas fa-undo text-[10px]"></i> Reset Filters
+          </button>
+</div>
+</div>
+
+<!-- Resource Results Count Banner -->
+<div class="max-w-5xl mx-auto mb-4 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 px-1">
 <div>
-<h4 class="font-bold text-gray-900 dark:text-white text-sm group-hover:text-primary transition-colors" >
-                    {{res.title}}
-                  </h4>
-<div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-<span>{{res.category}}</span> •
-                    <span>{{res.subject}}</span> •
-                    <span>{{res.semester}}</span> • <span>{{res.size}}</span>
+          Showing <strong class="text-gray-900 dark:text-white">{{(academicResources | filter:filterResourceByCategory).length}}</strong> of <strong class="text-gray-900 dark:text-white">{{academicResources.length}}</strong> academic resources
+        </div>
+<div class="text-[11px] italic" ng-show="selectedResourceCategory !== 'All Categories'">
+          Filtered by: <span class="font-bold text-secondary dark:text-blue-400">{{selectedResourceCategory}}</span>
+        </div>
 </div>
-<div class="text-[11px] font-bold text-secondary dark:text-blue-400 mt-0.5" >
-                    Downloads: {{res.downloads | number}}
-                  </div>
+
+<!-- Academic Resource List -->
+<div class="max-w-5xl mx-auto space-y-3.5">
+<div ng-repeat="res in filteredRes = (academicResources | filter:filterResourceByCategory)" class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm animated-card group hover:border-blue-200 dark:hover:border-slate-600 transition-all duration-300" data-aos="fade-up" data-aos-delay="{{$index * 50}}">
+<div class="flex items-start sm:items-center gap-4">
+<!-- File Format Badge -->
+<div class="w-12 h-12 rounded-2xl flex flex-col items-center justify-center font-extrabold text-xs shadow-sm flex-shrink-0 transition-transform duration-300 group-hover:scale-105" ng-class="res.fileFormat === 'PDF' ? 'bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800' : (res.fileFormat === 'DOCX' ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800' : 'bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800')">
+<i class="fas text-sm mb-0.5" ng-class="res.fileFormat === 'PDF' ? 'fa-file-pdf' : (res.fileFormat === 'DOCX' ? 'fa-file-word' : 'fa-file-archive')"></i>
+<span class="text-[10px] tracking-tight">{{res.fileFormat}}</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center flex-wrap gap-2 mb-1">
+<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-secondary dark:text-blue-300 border border-blue-100 dark:border-blue-800/60">
+                  {{res.category}}
+                </span>
+<span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300">
+                  {{res.department}}
+                </span>
+</div>
+<h4 class="font-bold text-gray-900 dark:text-white text-sm sm:text-base group-hover:text-primary dark:group-hover:text-blue-400 transition-colors leading-snug">
+                {{res.title}}
+              </h4>
+<div class="text-xs text-gray-500 dark:text-gray-400 mt-1 flex items-center flex-wrap gap-x-3 gap-y-1">
+<span><i class="fas fa-book-bookmark text-gray-400 mr-1"></i>{{res.subject}}</span>
+<span>•</span>
+<span><i class="fas fa-graduation-cap text-gray-400 mr-1"></i>{{res.semester}}</span>
+<span>•</span>
+<span><i class="fas fa-database text-gray-400 mr-1"></i>{{res.size}}</span>
+<span ng-if="res.author">•</span>
+<span ng-if="res.author" class="text-gray-400 font-medium"><i class="fas fa-user-pen text-gray-400 mr-1"></i>{{res.author}}</span>
+</div>
+<div class="text-[11px] font-bold text-secondary dark:text-blue-400 mt-1 flex items-center gap-1">
+<i class="fas fa-download text-[10px]"></i> {{res.downloads | number}} downloads
+              </div>
 </div>
 </div>
-<button ng-click="downloadResource(res)" class="bg-primary hover:bg-blue-900 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm inline-flex items-center gap-1.5" >
-<i class="fas fa-download text-[10px]"></i> Download
-              </button>
+<div class="flex sm:flex-col items-center sm:items-end justify-between gap-2 pt-3 sm:pt-0 border-t sm:border-t-0 border-gray-100 dark:border-slate-700/60">
+<button ng-click="downloadResource(res)" class="w-full sm:w-auto bg-primary hover:bg-blue-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-md inline-flex items-center justify-center gap-2 cursor-pointer">
+<i class="fas fa-download text-xs"></i> Download Resource
+            </button>
+</div>
+</div>
+
+<!-- Empty State -->
+<div ng-if="filteredRes.length === 0" class="text-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-gray-200 dark:border-slate-700 p-8">
+<div class="w-16 h-16 bg-blue-50 dark:bg-slate-700/60 text-secondary dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
+<i class="fas fa-folder-open"></i>
+</div>
+<h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 font-display">No Resources Found</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-5">
+            We couldn't find any resources matching your selected category, department, semester, or search query.
+          </p>
+<button type="button" ng-click="clearResourceFilters()" class="bg-primary hover:bg-blue-900 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition shadow-md">
+<i class="fas fa-sync-alt mr-1.5"></i> Clear All Filters
+          </button>
 </div>
 </div>
 </div>
