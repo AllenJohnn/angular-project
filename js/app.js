@@ -101,6 +101,26 @@ app.controller('MainController', ['$scope', '$window', '$timeout', '$interval', 
   $scope.doLogin = function(loginFormRef) {
     if (loginFormRef && loginFormRef.$invalid) return;
     if ($scope.loginData.username && $scope.loginData.password) {
+      if ($scope.loginData.username.trim().toLowerCase() !== 'allenjohn@gmail.com') {
+        var emailUser = $scope.loginData.username.split('@')[0];
+        var formattedName = emailUser.replace(/[._]/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+        var nameParts = formattedName.split(' ').filter(Boolean);
+        var initials = nameParts.length > 1 ? (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase() : formattedName.substring(0, 2).toUpperCase();
+        $scope.studentProfile = {
+          name: formattedName,
+          email: $scope.loginData.username.trim(),
+          studentId: 'FIT22MCA099',
+          department: 'MCA',
+          semester: '3',
+          batch: '2025-2027',
+          initials: initials,
+          role: 'Student'
+        };
+        $scope.registrationForm.studentName = formattedName;
+        $scope.registrationForm.email = $scope.studentProfile.email;
+        $scope.contactForm.name = formattedName;
+        $scope.contactForm.email = $scope.studentProfile.email;
+      }
       $scope.isLoggedIn = true;
       $scope.activeTab = 'home';
       $scope.loginError = '';
@@ -114,19 +134,39 @@ app.controller('MainController', ['$scope', '$window', '$timeout', '$interval', 
   };
 
   $scope.doSignup = function(signupFormRef) {
-    if (signupFormRef && signupFormRef.$invalid) return;
+    if (signupFormRef && signupFormRef.$invalid) {
+      $scope.signupError = 'Please fill out all required fields marked with * correctly before submitting.';
+      $scope.triggerToast('Please fill out all required fields marked with * before submitting.');
+      return;
+    }
     if ($scope.signupData.password !== $scope.signupData.confirmPassword) {
       $scope.signupError = 'Passwords do not match. Please verify.';
+      $scope.triggerToast('Passwords do not match. Please verify.');
       return;
     }
     if (!$scope.signupData.agreeTerms) {
       $scope.signupError = 'You must accept the FISAT Terms & Conduct policy to register.';
+      $scope.triggerToast('Please accept the FISAT Terms & Conduct policy.');
       return;
     }
-    var rawName = $scope.signupData.fullName.trim();
+    var rawName = $scope.signupData.fullName ? $scope.signupData.fullName.trim() : 'Allen John Joy';
     var nameParts = rawName.split(' ').filter(Boolean);
     var initials = nameParts.length > 1 ? (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase() : rawName.substring(0, 2).toUpperCase();
-    $scope.studentProfile = { name: rawName, email: $scope.signupData.email.trim(), studentId: $scope.signupData.studentId.trim(), department: $scope.signupData.department, semester: $scope.signupData.semester, batch: '2025-2027', initials: initials, role: 'Student' };
+    $scope.studentProfile = {
+      name: rawName,
+      email: $scope.signupData.email ? $scope.signupData.email.trim() : 'allenjohn@gmail.com',
+      studentId: $scope.signupData.studentId ? $scope.signupData.studentId.trim() : 'FIT22MCA042',
+      department: $scope.signupData.department || 'MCA',
+      semester: $scope.signupData.semester || '3',
+      batch: '2025-2027',
+      initials: initials,
+      role: 'Student'
+    };
+    $scope.registrationForm.studentName = rawName;
+    $scope.registrationForm.email = $scope.studentProfile.email;
+    $scope.contactForm.name = rawName;
+    $scope.contactForm.email = $scope.studentProfile.email;
+
     $scope.isLoggedIn = true;
     $scope.activeTab = 'home';
     $scope.signupError = '';
@@ -272,32 +312,91 @@ app.controller('MainController', ['$scope', '$window', '$timeout', '$interval', 
   $scope.eventRegistrations = [{ id: 1, studentName: "Allen John Joy", email: "allenjohn@gmail.com", phone: "9876543210", eventName: "FISAT FabLab Hackathon: AI & IoT Hardware Challenge", regDate: new Date(2026, 6, 24) }];
 
   $scope.submitEventRegistration = function(regFormRef) {
-    if (regFormRef.$valid && $scope.registrationForm.selectedEvent) {
+    if (regFormRef && regFormRef.$invalid) {
+      $scope.triggerToast('Please fill out all required fields (Select Event, Student Name, Email, 10-digit Phone) before submitting.');
+      return;
+    }
+    if (regFormRef && regFormRef.$valid && $scope.registrationForm.selectedEvent) {
       var ev = $scope.registrationForm.selectedEvent;
       if (ev.availableSeats > 0) {
         ev.availableSeats--;
-        $scope.eventRegistrations.unshift({ id: Date.now(), studentName: $scope.registrationForm.studentName, email: $scope.registrationForm.email, phone: $scope.registrationForm.phone, eventName: ev.name, regDate: new Date() });
+        $scope.eventRegistrations.unshift({
+          id: Date.now(),
+          studentName: $scope.registrationForm.studentName || ($scope.studentProfile ? $scope.studentProfile.name : 'Student'),
+          email: $scope.registrationForm.email || ($scope.studentProfile ? $scope.studentProfile.email : 'allenjohn@gmail.com'),
+          phone: $scope.registrationForm.phone,
+          eventName: ev.name,
+          regDate: new Date()
+        });
         $scope.triggerToast('Registration confirmed for ' + ev.name + ' at FISAT!');
-        $scope.registrationForm = { studentName: 'Allen John Joy', email: 'allenjohn@gmail.com', phone: '', selectedEvent: null, semester: '3', agreeTerms: false };
+        $scope.registrationForm = {
+          studentName: $scope.studentProfile ? $scope.studentProfile.name : 'Allen John Joy',
+          email: $scope.studentProfile ? $scope.studentProfile.email : 'allenjohn@gmail.com',
+          phone: '',
+          selectedEvent: null,
+          semester: '3',
+          agreeTerms: false
+        };
         regFormRef.$setPristine();
         regFormRef.$setUntouched();
       } else {
         $scope.triggerToast('Sorry, no seats available for this event.');
       }
+    } else if (!$scope.registrationForm.selectedEvent) {
+      $scope.triggerToast('Please select an event from the dropdown to complete registration.');
     }
   };
 
   $scope.lostFoundFilter = 'All';
   $scope.lostFoundItems = [
     { id: 1, name: "Apple MacBook Air M2 (Space Gray)", category: "Electronics", dateFound: new Date(2026, 6, 24), location: "FISAT Central Library - 2nd Floor", status: "Lost", contact: "allenjohn@gmail.com", img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&auto=format&fit=crop&q=80" },
-    { id: 2, name: "Sony Wireless Noise Canceling Headphones", category: "Electronics", dateFound: new Date(2026, 6, 23), location: "FISAT High Performance Computing Lab 3", status: "Found", contact: "cs.lab@fisat.ac.in", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&auto=format&fit=crop&q=80" },
-    { id: 3, name: "Leather Wallet with FISAT Student ID Card", category: "Accessories", dateFound: new Date(2026, 6, 22), location: "FISAT Student Canteen Complex", status: "Lost", contact: "canteen@fisat.ac.in", img: "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&auto=format&fit=crop&q=80" },
-    { id: 4, name: "Engineering Mathematics & Graph Theory Textbook", category: "Books", dateFound: new Date(2026, 6, 21), location: "Main Academic Block Lecture Hall 104", status: "Found", contact: "academic.office@fisat.ac.in", img: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80" }
+    { id: 2, name: "Leather Wallet with FISAT Student ID Card", category: "Accessories", dateFound: new Date(2026, 6, 22), location: "FISAT Student Canteen Complex", status: "Lost", contact: "canteen@fisat.ac.in", img: "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&auto=format&fit=crop&q=80" },
+    { id: 3, name: "Casio FX-991EX ClassWiz Scientific Calculator", category: "Electronics", dateFound: new Date(2026, 6, 20), location: "APJ Abdul Kalam Block Lab 2", status: "Lost", contact: "mca.dept@fisat.ac.in", img: "https://images.unsplash.com/photo-1587145820266-a5951ee6f620?w=400&auto=format&fit=crop&q=80" },
+    { id: 4, name: "Titan Automatic Analog Watch (Black Strap)", category: "Accessories", dateFound: new Date(2026, 6, 18), location: "FISAT Sports Complex Auditorium", status: "Lost", contact: "sports@fisat.ac.in", img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&auto=format&fit=crop&q=80" }
   ];
 
-  $scope.toggleItemStatus = function(item) {
-    item.status = (item.status === 'Lost') ? 'Found' : 'Lost';
-    $scope.triggerToast('Status updated for ' + item.name + ' to ' + item.status);
+  $scope.contactAdminRetrieval = function(item) {
+    $scope.triggerToast('Retrieval request for "' + item.name + '" submitted to FISAT Admin Office (admin@fisat.ac.in).');
+  };
+
+  $scope.showAddLostFoundModal = false;
+  $scope.newLostFoundItem = { name: '', category: 'Electronics', location: '', contact: '', img: '' };
+
+  $scope.openAddLostFoundModal = function() {
+    $scope.newLostFoundItem = {
+      name: '',
+      category: 'Electronics',
+      location: '',
+      contact: ($scope.studentProfile && $scope.studentProfile.email) ? $scope.studentProfile.email : 'allenjohn@gmail.com',
+      img: ''
+    };
+    $scope.showAddLostFoundModal = true;
+  };
+
+  $scope.closeAddLostFoundModal = function() {
+    $scope.showAddLostFoundModal = false;
+  };
+
+  $scope.addLostFoundItem = function(formRef) {
+    if (formRef && formRef.$invalid) return;
+    var defaultImg = 'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=400&auto=format&fit=crop&q=80';
+    var newItemObj = {
+      id: Date.now(),
+      name: $scope.newLostFoundItem.name.trim(),
+      category: $scope.newLostFoundItem.category,
+      dateFound: new Date(),
+      location: $scope.newLostFoundItem.location.trim(),
+      status: 'Lost',
+      contact: $scope.newLostFoundItem.contact.trim(),
+      img: $scope.newLostFoundItem.img ? $scope.newLostFoundItem.img.trim() : defaultImg
+    };
+    $scope.lostFoundItems.unshift(newItemObj);
+    $scope.showAddLostFoundModal = false;
+    $scope.triggerToast('New item "' + newItemObj.name + '" registered! Contact FISAT Admin for verification.');
+    if (formRef) {
+      formRef.$setPristine();
+      formRef.$setUntouched();
+    }
   };
 
   $scope.selectedMarketCategory = 'All';
@@ -311,8 +410,49 @@ app.controller('MainController', ['$scope', '$window', '$timeout', '$interval', 
     { id: 1, name: "Advanced Java & Cloud Computing (MCA S3 Coursework)", category: "Books", sellerName: "Allen John Joy", price: 250, contact: "allenjohn@gmail.com", condition: "Like New", img: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80" },
     { id: 2, name: "Arduino Mega & Sensor Starter Kit (Robotics)", category: "Lab Equipment", sellerName: "Ananya Nair", price: 1450, contact: "ananya.n@fisat.ac.in", condition: "Brand New", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&auto=format&fit=crop&q=80" },
     { id: 3, name: "Dell 24-inch IPS Monitor for Coding & Design", category: "Electronics", sellerName: "Kiran Paul", price: 6500, contact: "kiran.p@fisat.ac.in", condition: "Good", img: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&auto=format&fit=crop&q=80" },
-    { id: 4, name: "Ergonomic Mesh Study Chair for Hostel Room", category: "Accessories", sellerName: "Siddharth V.", price: 2200, contact: "siddharth.v@fisat.ac.in", condition: "Used", img: "https://images.unsplash.com/photo-1580481072645-022f9a6d8310?w=400&auto=format&fit=crop&q=80" }
+    { id: 4, name: "Ergonomic Mesh Study Chair for Hostel Room", category: "Accessories", sellerName: "Siddharth V.", price: 2200, contact: "siddharth.v@fisat.ac.in", condition: "Used", img: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&auto=format&fit=crop&q=80" }
   ];
+
+  $scope.showAddMarketplaceModal = false;
+  $scope.newMarketItem = { name: '', category: 'Books', price: 100, condition: 'Like New', contact: '', img: '' };
+
+  $scope.openAddMarketplaceModal = function() {
+    $scope.newMarketItem = {
+      name: '',
+      category: 'Books',
+      price: 100,
+      condition: 'Like New',
+      contact: ($scope.studentProfile && $scope.studentProfile.email) ? $scope.studentProfile.email : 'allenjohn@gmail.com',
+      img: ''
+    };
+    $scope.showAddMarketplaceModal = true;
+  };
+
+  $scope.closeAddMarketplaceModal = function() {
+    $scope.showAddMarketplaceModal = false;
+  };
+
+  $scope.addMarketplaceItem = function(formRef) {
+    if (formRef && formRef.$invalid) return;
+    var defaultImg = 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80';
+    var newItemObj = {
+      id: Date.now(),
+      name: $scope.newMarketItem.name.trim(),
+      category: $scope.newMarketItem.category,
+      sellerName: ($scope.studentProfile && $scope.studentProfile.name) ? $scope.studentProfile.name : 'Allen John Joy',
+      price: parseFloat($scope.newMarketItem.price) || 100,
+      contact: $scope.newMarketItem.contact.trim(),
+      condition: $scope.newMarketItem.condition,
+      img: $scope.newMarketItem.img ? $scope.newMarketItem.img.trim() : defaultImg
+    };
+    $scope.marketplaceItems.unshift(newItemObj);
+    $scope.showAddMarketplaceModal = false;
+    $scope.triggerToast('Product "' + newItemObj.name + '" listed successfully in Marketplace!');
+    if (formRef) {
+      formRef.$setPristine();
+      formRef.$setUntouched();
+    }
+  };
 
   $scope.searchPlacement = '';
   $scope.placements = [
@@ -345,18 +485,38 @@ app.controller('MainController', ['$scope', '$window', '$timeout', '$interval', 
   };
 
   $scope.contactForm = { name: 'Allen John Joy', email: 'allenjohn@gmail.com', message: '' };
-  $scope.submitContact = function() {
-    if ($scope.contactForm.name && $scope.contactForm.email) {
+  $scope.submitContact = function(cntFormRef) {
+    if (cntFormRef && cntFormRef.$invalid) {
+      $scope.triggerToast('Please fill out all required fields (Name, Email, Inquiry Message) before submitting.');
+      return;
+    }
+    if ($scope.contactForm.name && $scope.contactForm.email && $scope.contactForm.message) {
       $scope.triggerToast('Thank you ' + $scope.contactForm.name + '! Your inquiry has been sent to FISAT Admin.');
-      $scope.contactForm = { name: 'Allen John Joy', email: 'allenjohn@gmail.com', message: '' };
+      $scope.contactForm.message = '';
+      if (cntFormRef) {
+        cntFormRef.$setPristine();
+        cntFormRef.$setUntouched();
+      }
+    } else {
+      $scope.triggerToast('Please fill out all required inquiry fields marked with *.');
     }
   };
 
-  $scope.newsletterEmail = 'allenjohn@gmail.com';
-  $scope.subscribeNewsletter = function() {
+  $scope.newsletterEmail = '';
+  $scope.subscribeNewsletter = function(newsFormRef) {
+    if (newsFormRef && newsFormRef.$invalid) {
+      $scope.triggerToast('Please enter a valid email address to subscribe.');
+      return;
+    }
     if ($scope.newsletterEmail) {
-      $scope.triggerToast('Subscribed to FISAT Institutional Updates with ' + $scope.newsletterEmail);
+      $scope.triggerToast('Subscribed to FISAT Institutional Updates with ' + $scope.newsletterEmail + '!');
       $scope.newsletterEmail = '';
+      if (newsFormRef) {
+        newsFormRef.$setPristine();
+        newsFormRef.$setUntouched();
+      }
+    } else {
+      $scope.triggerToast('Please enter your email address to subscribe.');
     }
   };
 }]);
