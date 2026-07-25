@@ -407,11 +407,22 @@ app.controller('MainController', ['$scope', '$window', '$timeout', '$interval', 
   };
 
   $scope.marketplaceItems = [
-    { id: 1, name: "Advanced Java & Cloud Computing (MCA S3 Coursework)", category: "Books", sellerName: "Allen John Joy", price: 250, contact: "allenjohn@gmail.com", condition: "Like New", img: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80" },
-    { id: 2, name: "Arduino Mega & Sensor Starter Kit (Robotics)", category: "Lab Equipment", sellerName: "Ananya Nair", price: 1450, contact: "ananya.n@fisat.ac.in", condition: "Brand New", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&auto=format&fit=crop&q=80" },
-    { id: 3, name: "Dell 24-inch IPS Monitor for Coding & Design", category: "Electronics", sellerName: "Kiran Paul", price: 6500, contact: "kiran.p@fisat.ac.in", condition: "Good", img: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&auto=format&fit=crop&q=80" },
-    { id: 4, name: "Ergonomic Mesh Study Chair for Hostel Room", category: "Accessories", sellerName: "Siddharth V.", price: 2200, contact: "siddharth.v@fisat.ac.in", condition: "Used", img: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&auto=format&fit=crop&q=80" }
+    { id: 1, name: "Advanced Java & Cloud Computing (MCA S3 Coursework)", category: "Books", sellerName: "Allen John Joy", sellerEmail: "allenjohn@gmail.com", price: 250, contact: "allenjohn@gmail.com", condition: "Like New", img: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80" },
+    { id: 2, name: "Arduino Mega & Sensor Starter Kit (Robotics)", category: "Lab Equipment", sellerName: "Ananya Nair", sellerEmail: "ananya.n@fisat.ac.in", price: 1450, contact: "ananya.n@fisat.ac.in", condition: "Brand New", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&auto=format&fit=crop&q=80" },
+    { id: 3, name: "Dell 24-inch IPS Monitor for Coding & Design", category: "Electronics", sellerName: "Kiran Paul", sellerEmail: "kiran.p@fisat.ac.in", price: 6500, contact: "kiran.p@fisat.ac.in", condition: "Good", img: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&auto=format&fit=crop&q=80" },
+    { id: 4, name: "Ergonomic Mesh Study Chair for Hostel Room", category: "Accessories", sellerName: "Siddharth V.", sellerEmail: "siddharth.v@fisat.ac.in", price: 2200, contact: "siddharth.v@fisat.ac.in", condition: "Used", img: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&auto=format&fit=crop&q=80" }
   ];
+
+  $scope.isItemOwner = function(prod) {
+    if (!prod || !$scope.studentProfile) return false;
+    var userEmail = ($scope.studentProfile.email || '').toLowerCase().trim();
+    var userName = ($scope.studentProfile.name || '').toLowerCase().trim();
+
+    if (prod.sellerEmail && prod.sellerEmail.toLowerCase().trim() === userEmail) return true;
+    if (prod.contact && prod.contact.toLowerCase().trim() === userEmail) return true;
+    if (prod.sellerName && prod.sellerName.toLowerCase().trim() === userName) return true;
+    return false;
+  };
 
   $scope.showAddMarketplaceModal = false;
   $scope.newMarketItem = { name: '', category: 'Books', price: 100, condition: 'Like New', contact: '', img: '' };
@@ -440,6 +451,7 @@ app.controller('MainController', ['$scope', '$window', '$timeout', '$interval', 
       name: $scope.newMarketItem.name.trim(),
       category: $scope.newMarketItem.category,
       sellerName: ($scope.studentProfile && $scope.studentProfile.name) ? $scope.studentProfile.name : 'Allen John Joy',
+      sellerEmail: ($scope.studentProfile && $scope.studentProfile.email) ? $scope.studentProfile.email : 'allenjohn@gmail.com',
       price: parseFloat($scope.newMarketItem.price) || 100,
       contact: $scope.newMarketItem.contact.trim(),
       condition: $scope.newMarketItem.condition,
@@ -452,6 +464,33 @@ app.controller('MainController', ['$scope', '$window', '$timeout', '$interval', 
       formRef.$setPristine();
       formRef.$setUntouched();
     }
+  };
+
+  $scope.showRemoveMarketplaceModal = false;
+  $scope.itemToRemove = null;
+
+  $scope.confirmRemoveMarketplaceItem = function(prod) {
+    $scope.itemToRemove = prod;
+    $scope.showRemoveMarketplaceModal = true;
+  };
+
+  $scope.closeRemoveMarketplaceModal = function() {
+    $scope.showRemoveMarketplaceModal = false;
+    $scope.itemToRemove = null;
+  };
+
+  $scope.removeMarketplaceItem = function(prod) {
+    var target = prod || $scope.itemToRemove;
+    if (!target) return;
+    var idx = $scope.marketplaceItems.findIndex(function(item) {
+      return item.id === target.id;
+    });
+    if (idx !== -1) {
+      var removedName = $scope.marketplaceItems[idx].name;
+      $scope.marketplaceItems.splice(idx, 1);
+      $scope.triggerToast('Product "' + removedName + '" removed from Marketplace.');
+    }
+    $scope.closeRemoveMarketplaceModal();
   };
 
   $scope.searchPlacement = '';
