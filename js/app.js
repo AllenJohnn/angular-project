@@ -42,7 +42,49 @@ app.controller('MainController', ['$scope', '$window', '$timeout', '$interval', 
   $scope.authMode = 'login';
   $scope.showPassword = false;
   $scope.loginLoading = false;
-  $scope.loginError = '';
+  // Pre-configured & registered user accounts database
+  var defaultUsers = [
+    {
+      name: 'Allen John Joy',
+      email: 'allenjohn@gmail.com',
+      password: 'password123',
+      studentId: 'FIT22MCA042',
+      department: 'MCA',
+      semester: '3',
+      batch: '2025-2027',
+      initials: 'AJ',
+      role: 'Student'
+    }
+  ];
+
+  var loadedUsers = [];
+  try {
+    var storedUsers = localStorage.getItem('fisat_registered_users');
+    if (storedUsers) {
+      loadedUsers = JSON.parse(storedUsers);
+    }
+  } catch (e) {
+    loadedUsers = [];
+  }
+
+  if (!Array.isArray(loadedUsers) || loadedUsers.length === 0) {
+    loadedUsers = defaultUsers;
+  } else {
+    var hasDefault = loadedUsers.some(function(u) {
+      return (u.email || '').toLowerCase() === 'allenjohn@gmail.com';
+    });
+    if (!hasDefault) {
+      loadedUsers.unshift(defaultUsers[0]);
+    }
+  }
+
+  $scope.registeredUsers = loadedUsers;
+
+  function saveRegisteredUsers() {
+    try {
+      localStorage.setItem('fisat_registered_users', JSON.stringify($scope.registeredUsers));
+    } catch (e) {}
+  }
 
   $scope.loginData = { username: 'allenjohn@gmail.com', password: 'password123', rememberMe: true };
   $scope.facultyLoginData = { username: 'rajeshkumar@fisat.ac.in', password: 'password123', department: 'CSE' };
@@ -100,37 +142,58 @@ app.controller('MainController', ['$scope', '$window', '$timeout', '$interval', 
 
   $scope.doLogin = function(loginFormRef) {
     if (loginFormRef && loginFormRef.$invalid) return;
-    if ($scope.loginData.username && $scope.loginData.password) {
-      if ($scope.loginData.username.trim().toLowerCase() !== 'allenjohn@gmail.com') {
-        var emailUser = $scope.loginData.username.split('@')[0];
-        var formattedName = emailUser.replace(/[._]/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
-        var nameParts = formattedName.split(' ').filter(Boolean);
-        var initials = nameParts.length > 1 ? (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase() : formattedName.substring(0, 2).toUpperCase();
-        $scope.studentProfile = {
-          name: formattedName,
-          email: $scope.loginData.username.trim(),
-          studentId: 'FIT22MCA099',
-          department: 'MCA',
-          semester: '3',
-          batch: '2025-2027',
-          initials: initials,
-          role: 'Student'
-        };
-        $scope.registrationForm.studentName = formattedName;
-        $scope.registrationForm.email = $scope.studentProfile.email;
-        $scope.contactForm.name = formattedName;
-        $scope.contactForm.email = $scope.studentProfile.email;
-      }
-      $scope.isLoggedIn = true;
-      $scope.activeTab = 'home';
-      $scope.loginError = '';
-      $scope.loginLoading = false;
-      $window.scrollTo(0, 0);
-      $scope.triggerToast('Welcome back to FISAT Portal, ' + $scope.studentProfile.name + '!');
-      $timeout(function() { if (typeof AOS !== 'undefined') AOS.refresh(); }, 50);
-    } else {
-      $scope.loginError = 'Invalid student email or password. Please try again.';
+
+    var inputEmail = ($scope.loginData.username || '').trim().toLowerCase();
+    var inputPassword = $scope.loginData.password || '';
+
+    if (!inputEmail || !inputPassword) {
+      $scope.loginError = 'Please enter both your registered student email address and password.';
+      return;
     }
+
+    var user = $scope.registeredUsers.find(function(u) {
+      return (u.email || '').trim().toLowerCase() === inputEmail;
+    });
+
+    if (!user) {
+      $scope.loginError = 'Invalid student email address. No registered account found with "' + inputEmail + '".';
+      $scope.triggerToast('Login failed: Account not found.');
+      return;
+    }
+
+    if (user.password !== inputPassword) {
+      $scope.loginError = 'Incorrect password for "' + inputEmail + '". Please check your password and try again.';
+      $scope.triggerToast('Login failed: Incorrect password.');
+      return;
+    }
+
+    $scope.studentProfile = {
+      name: user.name,
+      email: user.email,
+      studentId: user.studentId || 'FIT22MCA042',
+      department: user.department || 'MCA',
+      semester: user.semester || '3',
+      batch: user.batch || '2025-2027',
+      initials: user.initials || 'ST',
+      role: user.role || 'Student'
+    };
+
+    if ($scope.registrationForm) {
+      $scope.registrationForm.studentName = user.name;
+      $scope.registrationForm.email = user.email;
+    }
+    if ($scope.contactForm) {
+      $scope.contactForm.name = user.name;
+      $scope.contactForm.email = user.email;
+    }
+
+    $scope.isLoggedIn = true;
+    $scope.activeTab = 'home';
+    $scope.loginError = '';
+    $scope.loginLoading = false;
+    $window.scrollTo(0, 0);
+    $scope.triggerToast('Welcome back to FISAT Portal, ' + user.name + '!');
+    $timeout(function() { if (typeof AOS !== 'undefined') AOS.refresh(); }, 50);
   };
 
   $scope.doSignup = function(signupFormRef) {
@@ -149,23 +212,52 @@ app.controller('MainController', ['$scope', '$window', '$timeout', '$interval', 
       $scope.triggerToast('Please accept the FISAT Terms & Conduct policy.');
       return;
     }
-    var rawName = $scope.signupData.fullName ? $scope.signupData.fullName.trim() : 'Allen John Joy';
+
+    var cleanEmail = ($scope.signupData.email || '').trim().toLowerCase();
+    if (!cleanEmail) {
+      $scope.signupError = 'A valid student email address is required.';
+      return;
+    }
+
+    var existing = $scope.registeredUsers.find(function(u) {
+      return (u.email || '').trim().toLowerCase() === cleanEmail;
+    });
+
+    if (existing) {
+      $scope.signupError = 'An account with this email address already exists. Please Sign In.';
+      $scope.triggerToast('Registration failed: Email already registered.');
+      return;
+    }
+
+    var rawName = $scope.signupData.fullName ? $scope.signupData.fullName.trim() : 'Student User';
     var nameParts = rawName.split(' ').filter(Boolean);
     var initials = nameParts.length > 1 ? (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase() : rawName.substring(0, 2).toUpperCase();
-    $scope.studentProfile = {
+
+    var newUser = {
       name: rawName,
-      email: $scope.signupData.email ? $scope.signupData.email.trim() : 'allenjohn@gmail.com',
-      studentId: $scope.signupData.studentId ? $scope.signupData.studentId.trim() : 'FIT22MCA042',
+      email: cleanEmail,
+      password: $scope.signupData.password,
+      studentId: $scope.signupData.studentId ? $scope.signupData.studentId.trim() : ('FIT22' + ($scope.signupData.department || 'MCA') + '0' + Math.floor(10 + Math.random() * 90)),
       department: $scope.signupData.department || 'MCA',
       semester: $scope.signupData.semester || '3',
       batch: '2025-2027',
       initials: initials,
       role: 'Student'
     };
-    $scope.registrationForm.studentName = rawName;
-    $scope.registrationForm.email = $scope.studentProfile.email;
-    $scope.contactForm.name = rawName;
-    $scope.contactForm.email = $scope.studentProfile.email;
+
+    $scope.registeredUsers.push(newUser);
+    saveRegisteredUsers();
+
+    $scope.studentProfile = newUser;
+
+    if ($scope.registrationForm) {
+      $scope.registrationForm.studentName = rawName;
+      $scope.registrationForm.email = cleanEmail;
+    }
+    if ($scope.contactForm) {
+      $scope.contactForm.name = rawName;
+      $scope.contactForm.email = cleanEmail;
+    }
 
     $scope.isLoggedIn = true;
     $scope.activeTab = 'home';
