@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: fisat-campusconnect
+    env: static
+    buildCommand: npm install
+    staticPublishPath: ./

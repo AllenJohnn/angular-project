@@ -1,29 +1,26 @@
 {
   "name": "fisat-campusconnect-angular",
   "version": "1.0.0",
-  "description": "FISAT CampusConnect - Smart Campus Portal (AngularJS Corporate Bootcamp)",
+  "description": "FISAT CampusConnect - Smart Campus Portal",
   "main": "index.html",
   "scripts": {
-    "start": "npx http-server ./ -p 8080 -c-1",
-    "dev": "npx http-server ./ -p 8080 -c-1"
+    "start": "http-server ./ -p ${PORT:-8080} -c-1",
+    "dev": "http-server ./ -p 8080 -c-1"
   },
   "keywords": [
     "angularjs",
     "fisat",
     "campusconnect",
-    "mca",
     "smart-campus"
   ],
-  "author": "Allen John Joy (Team Ultriod)",
+  "author": "Allen John Joy",
   "license": "ISC",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.1",
     "angular": "^1.8.3",
     "animate.css": "^4.1.1",
     "aos": "^2.3.4",
-    "bootstrap-icons": "^1.13.1"
-  },
-  "devDependencies": {
+    "bootstrap-icons": "^1.13.1",
     "http-server": "^14.1.1"
   }
 }
